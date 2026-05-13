@@ -1,0 +1,40 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+  config:
+    import: "optional:configserver:"
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: booking-service-test
+      auto-offset-reset: earliest
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+naja7i:
+  booking:
+    internal-key: test-internal-key
+    dispute-window-hours: 24
+    lead-tolerance-minutes: 15
+    # Long enough that the poller never fires during a hermetic test:
+    outbox-poll-ms: 600000
+    outbox-batch-size: 50
+    rest-connect-timeout-ms: 1000
+    rest-read-timeout-ms: 1500
+    calendar-base-url: http://calendar-service
+    pricing-base-url: http://pricing-service
+  kafka:
+    topics:
+      video-session-ended:  naja7i.video.session.ended.v1
+      auth-user-suspended:  naja7i.auth.user.suspended.v1
+
+logging:
+  level:
+    ma.naja7i: INFO

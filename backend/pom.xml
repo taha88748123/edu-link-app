@@ -41,6 +41,7 @@
     <module>notification-service</module>
     <module>calendar-service</module>
     <module>pricing-service</module>
+    <module>booking-service</module>
   </modules>
 
   <dependencyManagement>

@@ -46,6 +46,10 @@ jobs:
         working-directory: backend
         run: mvn -B -pl calendar-service,pricing-service -am clean verify
 
+      - name: Build & test Phase 2 wave 2 microservices
+        working-directory: backend
+        run: mvn -B -pl booking-service -am clean verify
+
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -60,7 +64,7 @@ jobs:
     if: github.event_name == 'push'
     strategy:
       matrix:
-        service: [config-server, service-discovery, api-gateway, auth-service, user-profile-service, notification-service, calendar-service, pricing-service]
+        service: [config-server, service-discovery, api-gateway, auth-service, user-profile-service, notification-service, calendar-service, pricing-service, booking-service]
     steps:
       - uses: actions/checkout@v4
 
