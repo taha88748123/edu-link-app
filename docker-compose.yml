@@ -323,6 +323,32 @@ services:
       timeout: 5s
       retries: 20
 
+  payment-service:
+    build:
+      context: ./backend
+      dockerfile: ./payment-service/Dockerfile
+    profiles: [services]
+    image: naja7i/payment-service:dev
+    depends_on:
+      service-discovery: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+      kafka: { condition: service_healthy }
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/payment_db
+      SPRING_DATASOURCE_USERNAME: naja7i
+      SPRING_DATASOURCE_PASSWORD: naja7i_dev
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    ports: ["8106:8106"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8106/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
   notification-service:
     build:
       context: ./backend

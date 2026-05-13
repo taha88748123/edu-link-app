@@ -1,0 +1,39 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+  config:
+    import: "optional:configserver:"
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: payment-service-test
+      auto-offset-reset: earliest
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+naja7i:
+  payment:
+    # Disabled in hermetic tests — the long delay ensures the @Scheduled
+    # method never fires during the brief test window.
+    outbox-poll-ms: 600000
+    outbox-batch-size: 50
+    dispute-window-hours: 24
+    platform-fee-bps: 1000
+  kafka:
+    topics:
+      booking-requested:        naja7i.booking.requested.v1
+      booking-confirmed:        naja7i.booking.confirmed.v1
+      booking-cancelled:        naja7i.booking.cancelled.v1
+      booking-declined:         naja7i.booking.declined.v1
+      booking-dispute-resolved: naja7i.booking.dispute_resolved.v1
+
+logging:
+  level:
+    ma.naja7i: INFO
