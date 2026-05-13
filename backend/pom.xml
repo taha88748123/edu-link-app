@@ -39,6 +39,8 @@
     <module>auth-service</module>
     <module>user-profile-service</module>
     <module>notification-service</module>
+    <module>calendar-service</module>
+    <module>pricing-service</module>
   </modules>
 
   <dependencyManagement>

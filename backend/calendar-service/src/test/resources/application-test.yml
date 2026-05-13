@@ -1,0 +1,35 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+  config:
+    import: "optional:configserver:"
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: calendar-service-test
+      auto-offset-reset: earliest
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+naja7i:
+  calendar:
+    internal-key: test-internal-key
+    ttl-minutes: 10
+    generation-window-days: 60
+    expiry-scan-cron: "0 0 * * * *"  # hourly so it doesn't fire during the test window
+  kafka:
+    topics:
+      profile-prof-validated: naja7i.profile.prof.validated.v1
+      profile-prof-rejected:  naja7i.profile.prof.rejected.v1
+      auth-user-suspended:    naja7i.auth.user.suspended.v1
+
+logging:
+  level:
+    ma.naja7i: INFO

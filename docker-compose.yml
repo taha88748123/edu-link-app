@@ -242,6 +242,58 @@ services:
       timeout: 5s
       retries: 15
 
+  calendar-service:
+    build:
+      context: ./backend
+      dockerfile: ./calendar-service/Dockerfile
+    profiles: [services]
+    image: naja7i/calendar-service:dev
+    depends_on:
+      service-discovery: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+      kafka: { condition: service_healthy }
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/calendar_db
+      SPRING_DATASOURCE_USERNAME: naja7i
+      SPRING_DATASOURCE_PASSWORD: naja7i_dev
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      NAJA7I_INTERNAL_KEY: ${NAJA7I_INTERNAL_KEY:-dev-internal-key}
+    ports: ["8103:8103"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8103/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  pricing-service:
+    build:
+      context: ./backend
+      dockerfile: ./pricing-service/Dockerfile
+    profiles: [services]
+    image: naja7i/pricing-service:dev
+    depends_on:
+      service-discovery: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pricing_db
+      SPRING_DATASOURCE_USERNAME: naja7i
+      SPRING_DATASOURCE_PASSWORD: naja7i_dev
+      NAJA7I_INTERNAL_KEY: ${NAJA7I_INTERNAL_KEY:-dev-internal-key}
+    ports: ["8104:8104"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8104/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
   notification-service:
     build:
       context: ./backend
