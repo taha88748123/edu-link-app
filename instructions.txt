@@ -1,0 +1,437 @@
+================================================================================
+                    NAJA7I-APP — INSTRUCTIONS POUR CLAUDE CODE
+                    Plateforme EdTech Marocaine — Prof / Étudiant / Admin
+================================================================================
+
+🎯 MISSION GLOBALE
+--------------------------------------------------------------------------------
+Tu es Claude Orchestrateur, chef de projet technique d'une plateforme EdTech
+marocaine nommée NAJA7I-APP (de l'arabe نجاحي = "ma réussite").
+
+Cette plateforme met en relation des professeurs particuliers et des étudiants
+au Maroc, avec une gestion centralisée par un admin et l'assistance d'agents IA.
+
+Tu dois te diviser en sous-agents spécialisés, chacun responsable d'un
+microservice. Chaque sous-agent doit livrer un code production-ready, testé,
+documenté et déployable.
+
+
+🏗️ STACK TECHNIQUE IMPOSÉE
+--------------------------------------------------------------------------------
+| Couche                          | Technologie                              |
+|---------------------------------|------------------------------------------|
+| Backend                         | Spring Boot 3.x (Java 21), microservices |
+| Communication inter-services    | REST (sync) + Kafka/RabbitMQ (async)     |
+| API Gateway                     | Spring Cloud Gateway                     |
+| Service Discovery               | Eureka (ou Consul)                       |
+| Config centralisée              | Spring Cloud Config                      |
+| Auth                            | Keycloak ou Spring Security + JWT/OAuth2 |
+| Base de données                 | PostgreSQL (par service) + Redis + Mongo |
+| Frontend Web                    | React 18 + TypeScript + Vite + Tailwind  |
+|                                 | + Zustand/Redux Toolkit + TanStack Query |
+| Frontend Mobile                 | Flutter 3.x + Riverpod/Bloc + Dio        |
+| Streaming Vidéo                 | LiveKit / Jitsi Meet / Agora (WebRTC)    |
+| IA                              | Anthropic Claude API (+ OpenAI fallback) |
+| Stockage fichiers               | MinIO (S3-compatible)                    |
+| Observabilité                   | Prometheus + Grafana + ELK + Jaeger      |
+| CI/CD                           | GitHub Actions + Docker + Kubernetes     |
+
+
+👥 ACTEURS DU SYSTÈME
+--------------------------------------------------------------------------------
+1. Admin       — Supervise toute la plateforme.
+2. Professeur  — Offre des cours particuliers.
+3. Étudiant    — Réserve et suit des cours.
+4. Agents IA   — Assistent les utilisateurs (recommandation, évaluation, etc.)
+
+
+🧩 DÉCOUPAGE EN MICROSERVICES ET AGENTS CLAUDE
+--------------------------------------------------------------------------------
+Chaque microservice = un sous-agent Claude dédié.
+
+────────────────────────────────────────────────────────────────────────────────
+🔹 AGENT 1 — auth-service
+────────────────────────────────────────────────────────────────────────────────
+Gestion de l'authentification et des rôles.
+- Inscription/Connexion (email, téléphone, Google, Apple).
+- Gestion des rôles : ADMIN, PROF, STUDENT.
+- JWT avec refresh tokens, 2FA par SMS (Twilio) ou WhatsApp.
+- Vérification téléphone par OTP.
+- Reset password sécurisé.
+
+────────────────────────────────────────────────────────────────────────────────
+🔹 AGENT 2 — user-profile-service
+────────────────────────────────────────────────────────────────────────────────
+Gestion des profils utilisateurs.
+- Prof : bio, diplômes (upload PDF), compétences, matières enseignées,
+  niveaux (primaire, collège, lycée, supérieur), photo, vidéo de présentation.
+- Étudiant : niveau scolaire, matières d'intérêt, objectifs.
+- Statut des profs : EN_ATTENTE, EN_TEST_IA, EN_ENTRETIEN_ADMIN, VALIDÉ,
+  SUSPENDU, REJETÉ.
+- Système d'étoiles et avis (note moyenne, commentaires, modération auto).
+
+────────────────────────────────────────────────────────────────────────────────
+🔹 AGENT 3 — calendar-service
+────────────────────────────────────────────────────────────────────────────────
+Calendrier dynamique et disponibilités.
+- Le prof définit ses créneaux récurrents ou ponctuels.
+- Adaptation dynamique : si une séance est annulée, propose le créneau à
+  d'autres étudiants.
+- Vue semaine/mois pour prof et étudiant.
+- Synchronisation Google Calendar / Apple Calendar (bonus).
+- Notifications de rappel J-1 et H-1 (push, SMS, WhatsApp).
+- Gestion des fuseaux horaires.
+
+────────────────────────────────────────────────────────────────────────────────
+🔹 AGENT 4 — pricing-service
+────────────────────────────────────────────────────────────────────────────────
+Tarification des séances.
+- Le prof fixe un tarif par matière, par niveau, par modalité (local, distance,
+  domicile), pour chaque jour de la semaine.
+- Tarifs adaptables par durée (30min, 1h, 1h30, 2h).
+- Réductions sur packs (5 séances, 10 séances).
+- Suggestion IA de tarif basée sur le marché (compétences, expérience, demande).
+
+────────────────────────────────────────────────────────────────────────────────
+🔹 AGENT 5 — booking-service
+────────────────────────────────────────────────────────────────────────────────
+Réservation et cycle de vie des séances.
+- États d'une séance : DEMANDÉE → ACCEPTÉE_PAR_PROF → EN_COURS → TERMINÉE
+  → CONFIRMÉE (ou ANNULÉE, LITIGE).
+- Workflow d'annulation avec approbation admin après acceptation.
+- Tickets de litige avec cause, preuves (screenshots, messages).
+- Système de confirmation post-séance par l'étudiant.
+
+────────────────────────────────────────────────────────────────────────────────
+🔹 AGENT 6 — payment-service  ⚠️ SERVICE CRITIQUE
+────────────────────────────────────────────────────────────────────────────────
+Cœur financier de la plateforme.
+
+WORKFLOW COMPLET À IMPLÉMENTER :
+1. L'étudiant recharge sa balance via : CashPlus, Virement Bancaire, WhatsApp
+   (paiement manuel avec preuve uploadée).
+2. La recharge passe en statut EN_ATTENTE_ADMIN.
+3. L'admin confirme / modifie / rejette la recharge.
+4. Une fois la balance créditée, l'étudiant réserve une séance.
+5. Le montant est débité et mis en séquestre (statut ESCROW).
+6. Le prof accepte → la séance est confirmée, le contact de l'étudiant est
+   révélé au prof.
+7. Si annulation post-acceptation → ticket admin obligatoire pour remboursement.
+8. Après séance confirmée par l'étudiant → demande de virement au prof envoyée
+   à l'admin.
+9. L'admin peut créditer/débiter manuellement les balances de tous les
+   utilisateurs.
+
+SÉCURITÉ :
+- Aucun contact entre prof et étudiant avant acceptation (anti-contournement).
+- Toutes les transactions journalisées (audit log immuable).
+- Historique exportable en PDF/Excel.
+
+────────────────────────────────────────────────────────────────────────────────
+🔹 AGENT 7 — chat-service
+────────────────────────────────────────────────────────────────────────────────
+Messagerie sécurisée prof ↔ étudiant.
+- Chat temps réel via WebSocket (Spring + STOMP).
+- Réponses pré-remplies par IA style Facebook Marketplace
+  ("Quel est ton niveau actuel ?", "Disponible mercredi 18h ?",
+   "Quel chapitre veux-tu réviser ?").
+- Filtrage automatique des numéros de téléphone/emails avant acceptation
+  de séance (anti-contournement).
+- Pièces jointes (PDF, images d'exercices).
+- Indicateurs lu/non lu, écriture en cours.
+- Voice notes (très populaire au Maroc).
+
+────────────────────────────────────────────────────────────────────────────────
+🔹 AGENT 8 — video-session-service
+────────────────────────────────────────────────────────────────────────────────
+Cours en ligne (modalité Online).
+- Intégration LiveKit / Jitsi / Agora.
+- Outils pédagogiques intégrés :
+  * Tableau blanc collaboratif (Excalidraw-like)
+  * Éditeur de texte/maths partagé (KaTeX support)
+  * Partage d'écran
+  * Enregistrement de la séance (avec consentement)
+  * Quiz live envoyés par le prof
+  * Outil de dessin géométrique (utile pour maths)
+  * Code editor partagé (pour cours d'informatique)
+- Mesure automatique de la durée effective de la séance.
+
+────────────────────────────────────────────────────────────────────────────────
+🔹 AGENT 9 — ai-agent-service
+────────────────────────────────────────────────────────────────────────────────
+Cerveau intelligent de la plateforme. Multi-tâches IA via Claude API.
+
+SOUS-MODULES :
+1. Matching Engine : recommande les meilleurs profs à un étudiant (basé sur
+   niveau, budget, disponibilité, avis, compatibilité pédagogique).
+2. QCM Skill Assessment : génère dynamiquement un QCM adapté aux compétences
+   déclarées par le prof. Filtre les profils insuffisants avant l'entretien admin.
+3. Calendar Optimizer : suggère au prof la meilleure organisation hebdomadaire
+   selon ses diplômes et la demande du marché.
+4. Revision Companion : assistant IA présent pendant la séance (chat latéral),
+   peut générer des exercices, expliquer un concept, corriger un exercice.
+5. Auto-moderation : analyse les messages pour détecter les tentatives de
+   contournement de la plateforme.
+6. Smart Replies : génère les réponses pré-remplies du chat.
+
+────────────────────────────────────────────────────────────────────────────────
+🔹 AGENT 10 — local-management-service
+────────────────────────────────────────────────────────────────────────────────
+Gestion des locaux physiques pour séances en présentiel.
+- Le prof propose un local (adresse, photos, équipements, capacité).
+- L'admin valide ou rejette.
+- Liste des locaux disponibles affichée aux étudiants en mode LOCAL.
+- Géolocalisation (carte intégrée).
+
+────────────────────────────────────────────────────────────────────────────────
+🔹 AGENT 11 — notification-service
+────────────────────────────────────────────────────────────────────────────────
+Notifications multi-canal.
+- Push (Firebase Cloud Messaging pour mobile et web).
+- Email (SendGrid).
+- SMS (Twilio).
+- WhatsApp Business API (essentiel au Maroc).
+- Templates personnalisables.
+
+────────────────────────────────────────────────────────────────────────────────
+🔹 AGENT 12 — admin-dashboard-service
+────────────────────────────────────────────────────────────────────────────────
+API spécifique à l'admin.
+- Vue d'ensemble : KPIs (séances, revenus, profs actifs, litiges en cours).
+- Validation des profils profs et locaux.
+- Gestion des recharges, virements, remboursements.
+- Modération des litiges.
+- Génération de rapports (PDF/Excel).
+
+────────────────────────────────────────────────────────────────────────────────
+🔹 AGENT 13 — frontend-web
+────────────────────────────────────────────────────────────────────────────────
+Application React TS.
+- Architecture modulaire (feature-based).
+- Design system avec Tailwind + shadcn/ui.
+- Responsive desktop/tablette.
+- Internationalisation FR / AR (RTL) / EN.
+- Dashboard différent par rôle.
+
+────────────────────────────────────────────────────────────────────────────────
+🔹 AGENT 14 — frontend-mobile
+────────────────────────────────────────────────────────────────────────────────
+Application Flutter.
+- Architecture clean (Domain/Data/Presentation).
+- Push notifications natives.
+- Mode offline pour le calendrier.
+- Support multi-langues FR/AR/EN.
+- Optimisé Android + iOS.
+
+
+💡 FONCTIONNALITÉS INNOVANTES À INTÉGRER
+--------------------------------------------------------------------------------
+1.  Vouchers Parents — Les parents rechargent la balance de l'enfant et
+    reçoivent des rapports de progression.
+2.  Mode Groupe (Mini-classes) — Séances groupées 2-5 élèves à tarif réduit.
+3.  Programme de Fidélité — Points gagnés par séance, échangeables.
+4.  Système de Parrainage — Bonus en balance pour parrains.
+5.  Diagnostic IA initial — Évalue le niveau de l'étudiant à l'inscription.
+6.  Suivi de Progression — Graphiques sur compétences, badges.
+7.  Devoirs Asynchrones — Exercices entre séances, pré-corrigés par IA.
+8.  Marketplace de Ressources — Profs vendent des fiches/exercices PDF.
+9.  Mode "Examen Blanc" — Sessions simulation BAC/concours avec correction IA.
+10. Vérification anti-fraude diplômes — OCR + vérification IA des documents.
+11. Voice Notes dans le chat.
+12. Mode Ramadan — Créneaux adaptés.
+13. Bourse Sociale — Donateurs financent séances pour étudiants précaires.
+14. Replay des séances — Visible 30 jours après le cours.
+15. AI Tutor en autonomie — Entre deux séances, l'étudiant discute avec un
+    agent IA qui connaît le contenu de ses derniers cours.
+
+
+📋 LIVRABLES ATTENDUS PAR SOUS-AGENT
+--------------------------------------------------------------------------------
+Chaque sous-agent Claude doit produire :
+
+1.  Architecture détaillée du microservice (diagramme + description).
+2.  Modèle de données (entités JPA + schéma DB).
+3.  Contrats d'API (OpenAPI 3.0 / Swagger).
+4.  Code Spring Boot complet : controllers, services, repositories, DTOs,
+    mappers (MapStruct), exceptions globales.
+5.  Tests unitaires (JUnit 5 + Mockito) et tests d'intégration (Testcontainers).
+6.  Dockerfile + docker-compose pour le service.
+7.  Documentation README.md : prérequis, lancement local, endpoints, cURL.
+8.  Variables d'environnement documentées (.env.example).
+9.  Migration de schéma (Flyway ou Liquibase).
+10. Events Kafka/Rabbit émis et consommés (si applicable).
+
+Pour le frontend :
+- Composants typés, documentés, testés (Vitest/Jest + RTL).
+- Storybook pour les composants UI.
+- Mocks d'API (MSW).
+
+
+📁 STRUCTURE DU MONOREPO ATTENDUE
+--------------------------------------------------------------------------------
+naja7i-app/
+├── README.md
+├── docker-compose.yml
+├── docs/
+│   ├── architecture/
+│   │   ├── c4-context.md
+│   │   ├── c4-containers.md
+│   │   └── data-flow.md
+│   ├── api-contracts/
+│   └── deployment/
+├── infrastructure/
+│   ├── k8s/                    # Helm charts
+│   ├── terraform/              # IaC (optionnel)
+│   └── monitoring/             # Prometheus, Grafana configs
+├── backend/
+│   ├── api-gateway/
+│   ├── service-discovery/
+│   ├── config-server/
+│   ├── auth-service/
+│   ├── user-profile-service/
+│   ├── calendar-service/
+│   ├── pricing-service/
+│   ├── booking-service/
+│   ├── payment-service/
+│   ├── chat-service/
+│   ├── video-session-service/
+│   ├── ai-agent-service/
+│   ├── local-management-service/
+│   ├── notification-service/
+│   ├── admin-dashboard-service/
+│   └── shared-libs/            # DTOs, events, utils partagés
+├── frontend-web/
+│   ├── src/
+│   ├── public/
+│   └── package.json
+├── frontend-mobile/
+│   ├── lib/
+│   ├── android/
+│   ├── ios/
+│   └── pubspec.yaml
+└── .github/
+    └── workflows/              # CI/CD
+
+
+🚀 ORDRE D'EXÉCUTION RECOMMANDÉ
+--------------------------------------------------------------------------------
+Phase 0 (Setup) :
+  - Architecture globale (diagrammes C4)
+  - Setup monorepo + Docker Compose racine
+  - Service Discovery + API Gateway + Config Server
+
+Phase 1 (Fondations) :
+  Agent 1 (auth) → Agent 2 (user-profile) → Agent 11 (notification)
+
+Phase 2 (Cœur métier) :
+  Agent 3 (calendar) → Agent 4 (pricing) → Agent 5 (booking)
+  → Agent 6 (payment) ⚠️ CRITIQUE
+
+Phase 3 (Communication) :
+  Agent 7 (chat) → Agent 8 (video-session)
+
+Phase 4 (Intelligence & Gestion) :
+  Agent 9 (ai-agent) → Agent 10 (local) → Agent 12 (admin)
+
+Phase 5 (Interfaces) :
+  Agent 13 (web) + Agent 14 (mobile) EN PARALLÈLE
+
+
+⚙️ INSTRUCTIONS À CLAUDE CODE (ORCHESTRATEUR)
+--------------------------------------------------------------------------------
+1. COMMENCE par produire l'ARCHITECTURE GLOBALE :
+   - Diagramme C4 (contexte, conteneurs, composants)
+   - Schéma de communication entre microservices
+   - Schéma DB global
+   - Liste des events Kafka/RabbitMQ
+   - Contrats DTOs partagés
+
+2. SETUP le monorepo avec la structure ci-dessus.
+
+3. POUR CHAQUE MICROSERVICE, délègue à un sous-agent en utilisant la
+   commande Task tool (parallélisation possible) :
+   - Donne-lui son brief précis
+   - Liste ses dépendances avec les autres services
+   - Définis ses contrats d'API à respecter
+   - Demande les livrables listés ci-dessus
+
+4. COORDONNE les interfaces : un sous-agent ne doit JAMAIS inventer un endpoint
+   d'un autre service sans contrat préalable validé par toi.
+
+5. FOURNIS un plan de déploiement Kubernetes (Helm) avec environnements
+   dev/staging/prod.
+
+6. PROPOSE une roadmap MVP :
+   - v1 (3 mois) : auth, profils, booking, payment basique, web
+   - v2 (6 mois) : chat, video, IA, mobile
+   - v3 (12 mois) : fonctionnalités innovantes, marketplace, etc.
+
+7. AVANT DE CODER : présente ton plan d'exécution et attends validation.
+
+
+🇲🇦 CONTEXTE LOCAL MAROCAIN À RESPECTER
+--------------------------------------------------------------------------------
+- Devise : MAD (Dirham).
+- Langues prioritaires : Français, Arabe (RTL), Darija (transcription latine).
+- Méthodes de paiement adaptées : CashPlus, Wafacash, virement bancaire local,
+  WhatsApp Business.
+- Conformité : Loi 09-08 sur la protection des données personnelles (équivalent
+  RGPD au Maroc), enregistrement CNDP si nécessaire.
+- Heures de bureau et calendrier scolaire marocain (rentrée septembre,
+  examens nationaux du BAC).
+
+
+📐 CONVENTIONS DE CODE
+--------------------------------------------------------------------------------
+Backend (Java/Spring) :
+- Java 21, Lombok, MapStruct.
+- Architecture hexagonale (Ports & Adapters) ou Clean Architecture.
+- Naming : PascalCase pour classes, camelCase pour méthodes, SNAKE_CASE pour
+  constantes, kebab-case pour endpoints.
+- API REST : versionning via /api/v1/...
+- Gestion globale des exceptions (@RestControllerAdvice).
+- Validation Jakarta Bean Validation.
+- Logs structurés (Logback + JSON).
+
+Frontend Web (React TS) :
+- TypeScript strict mode.
+- Composants fonctionnels + hooks.
+- Feature-based folder structure.
+- Tests : Vitest + React Testing Library.
+- ESLint + Prettier.
+
+Frontend Mobile (Flutter) :
+- Architecture Clean (Domain/Data/Presentation).
+- State management : Riverpod (préféré) ou Bloc.
+- Tests : flutter_test + mocktail.
+
+Git :
+- Conventional Commits (feat:, fix:, chore:, docs:, refactor:, test:).
+- Branches : main, develop, feature/*, hotfix/*, release/*.
+- PRs avec template et CI obligatoire.
+
+
+✅ DÉFINITION DE "TERMINÉ" (Definition of Done)
+--------------------------------------------------------------------------------
+Un microservice est considéré comme terminé quand :
+- [ ] Tous les endpoints documentés (Swagger).
+- [ ] Tests unitaires > 80% coverage.
+- [ ] Tests d'intégration des chemins critiques.
+- [ ] Dockerfile fonctionnel.
+- [ ] docker-compose lance le service avec ses dépendances.
+- [ ] README à jour.
+- [ ] Variables d'environnement documentées.
+- [ ] Migrations DB versionnées.
+- [ ] Logs et métriques (Prometheus) exposés.
+- [ ] Healthcheck endpoint (/actuator/health).
+- [ ] Sécurité : auth + autorisation par rôle vérifiée.
+
+
+================================================================================
+🚦 COMMENCE MAINTENANT PAR :
+1. Lire et confirmer cette mission.
+2. Produire l'ARCHITECTURE GLOBALE (diagrammes + schémas).
+3. Setup du monorepo.
+4. Présenter ton plan d'exécution détaillé.
+5. ATTENDRE VALIDATION avant de commencer le code.
+================================================================================

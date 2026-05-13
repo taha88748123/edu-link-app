@@ -1,0 +1,292 @@
+# docker-compose.yml — NAJA7I-APP local dev
+# Profiles : infra (deps) · platform (config/eureka/gateway) · services (microservices métier, à venir)
+
+name: naja7i
+
+x-common-env: &common-env
+  TZ: Africa/Casablanca
+
+services:
+  # ---------------------------------------------------------------- INFRA
+  postgres:
+    image: postgres:16-alpine
+    profiles: [infra]
+    environment:
+      <<: *common-env
+      POSTGRES_USER: naja7i
+      POSTGRES_PASSWORD: naja7i_dev
+      POSTGRES_DB: naja7i
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infrastructure/postgres-init.sh:/docker-entrypoint-initdb.d/init.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U naja7i"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mongo:
+    image: mongo:7
+    profiles: [infra]
+    environment:
+      <<: *common-env
+      MONGO_INITDB_ROOT_USERNAME: naja7i
+      MONGO_INITDB_ROOT_PASSWORD: naja7i_dev
+    ports: ["27017:27017"]
+    volumes:
+      - mongodata:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    profiles: [infra]
+    environment: { <<: *common-env }
+    ports: ["6379:6379"]
+    command: redis-server --appendonly yes
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.3
+    profiles: [infra]
+    environment:
+      <<: *common-env
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports: ["2181:2181"]
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.3
+    profiles: [infra]
+    depends_on: [zookeeper]
+    environment:
+      <<: *common-env
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    ports: ["9092:9092"]
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    profiles: [infra]
+    depends_on: [kafka]
+    environment:
+      <<: *common-env
+      KAFKA_CLUSTERS_0_NAME: naja7i
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    ports: ["8090:8080"]
+
+  minio:
+    image: minio/minio:latest
+    profiles: [infra]
+    command: server /data --console-address ":9001"
+    environment:
+      <<: *common-env
+      MINIO_ROOT_USER: naja7i
+      MINIO_ROOT_PASSWORD: naja7i_dev_changeme
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Console
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    profiles: [infra]
+    environment: { <<: *common-env }
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # UI
+
+  # ---------------------------------------------------------------- PLATFORM
+  config-server:
+    build:
+      context: ./backend
+      dockerfile: ./config-server/Dockerfile
+    profiles: [platform]
+    image: naja7i/config-server:dev
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: docker
+    ports: ["8888:8888"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  service-discovery:
+    build:
+      context: ./backend
+      dockerfile: ./service-discovery/Dockerfile
+    profiles: [platform]
+    image: naja7i/service-discovery:dev
+    depends_on:
+      config-server: { condition: service_healthy }
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+    ports: ["8761:8761"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api-gateway:
+    build:
+      context: ./backend
+      dockerfile: ./api-gateway/Dockerfile
+    profiles: [platform]
+    image: naja7i/api-gateway:dev
+    depends_on:
+      service-discovery: { condition: service_healthy }
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      NAJA7I_JWT_SECRET: ${NAJA7I_JWT_SECRET:-dev-only-secret-change-me-32+chars-required}
+    ports: ["8080:8080"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ---------------------------------------------------------------- SERVICES (Phase 1)
+  auth-service:
+    build:
+      context: ./backend
+      dockerfile: ./auth-service/Dockerfile
+    profiles: [services]
+    image: naja7i/auth-service:dev
+    depends_on:
+      service-discovery: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      kafka: { condition: service_healthy }
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/auth_db
+      SPRING_DATASOURCE_USERNAME: naja7i
+      SPRING_DATASOURCE_PASSWORD: naja7i_dev
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      KAFKA_BOOTSTRAP: kafka:29092
+      NAJA7I_JWT_SECRET: ${NAJA7I_JWT_SECRET:-dev-only-secret-change-me-32+chars-required}
+    ports: ["8101:8101"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8101/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  user-profile-service:
+    build:
+      context: ./backend
+      dockerfile: ./user-profile-service/Dockerfile
+    profiles: [services]
+    image: naja7i/user-profile-service:dev
+    depends_on:
+      service-discovery: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+      kafka: { condition: service_healthy }
+      minio: { condition: service_healthy }
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/profile_db
+      SPRING_DATASOURCE_USERNAME: naja7i
+      SPRING_DATASOURCE_PASSWORD: naja7i_dev
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: naja7i
+      MINIO_SECRET_KEY: naja7i_dev_changeme
+      MINIO_BUCKET: naja7i-profiles
+    ports: ["8102:8102"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8102/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  notification-service:
+    build:
+      context: ./backend
+      dockerfile: ./notification-service/Dockerfile
+    profiles: [services]
+    image: naja7i/notification-service:dev
+    depends_on:
+      service-discovery: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      kafka: { condition: service_healthy }
+      mailhog: { condition: service_started }
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: notification_db
+      POSTGRES_USER: naja7i
+      POSTGRES_PASSWORD: naja7i_dev
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SMTP_HOST: mailhog
+      SMTP_PORT: "1025"
+      NAJA7I_INTERNAL_KEY: ${NAJA7I_INTERNAL_KEY:-dev-internal-key}
+      NOTIF_SMS_DRIVER: logging
+      NOTIF_WA_DRIVER: logging
+      NOTIF_EMAIL_DRIVER: smtp
+      NOTIF_PUSH_DRIVER: logging
+    ports: ["8111:8111"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8111/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  pgdata:
+  mongodata:
+  redisdata:
+  miniodata:
+
+networks:
+  default:
+    name: naja7i-net

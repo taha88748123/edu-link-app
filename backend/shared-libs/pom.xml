@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>ma.naja7i</groupId>
+    <artifactId>naja7i-backend-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>shared-libs</artifactId>
+  <packaging>pom</packaging>
+  <name>NAJA7I — Shared Libraries</name>
+
+  <modules>
+    <module>shared-dto</module>
+    <module>shared-events</module>
+    <module>shared-errors</module>
+    <module>shared-security</module>
+    <module>shared-i18n</module>
+  </modules>
+
+  <build>
+    <plugins>
+      <!-- shared libs are plain jars, not Spring Boot apps -->
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

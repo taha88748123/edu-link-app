@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      mvc:
+        # routes configured in Java (see RouteConfig), this is just defaults
+      default-filters:
+        - name: RemoveRequestHeader
+          args:
+            name: Cookie
+  main:
+    web-application-type: reactive
+
+naja7i:
+  jwt:
+    secret: ${NAJA7I_JWT_SECRET:dev-only-secret-change-me-32+chars-required}
+    issuer: naja7i-auth
+    access-ttl: PT15M
+  cors:
+    allowed-origins: "http://localhost:5173,http://localhost:3000"
