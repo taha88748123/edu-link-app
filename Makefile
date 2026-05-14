@@ -1,7 +1,7 @@
 SHELL := /usr/bin/env bash
 COMPOSE := docker compose
 
-.PHONY: help infra-up infra-down platform-up platform-down services-up services-down up down logs ps build-shared build-platform build-services test clean
+.PHONY: help infra-up infra-down platform-up platform-down services-up services-down frontend-up frontend-down frontend-dev frontend-build up down logs ps build-shared build-platform build-services test clean
 
 help:
 	@echo "NAJA7I-APP — make targets"
@@ -12,7 +12,11 @@ help:
 	@echo "  platform-down   Stop platform services"
 	@echo "  services-up     Start Phase 1 microservices (auth, profile, notification)"
 	@echo "  services-down   Stop Phase 1 microservices"
-	@echo "  up              Start everything (infra + platform + services)"
+	@echo "  frontend-up     Start frontend container (depends on api-gateway)"
+	@echo "  frontend-down   Stop frontend container"
+	@echo "  frontend-dev    Run frontend Vite dev server locally (port 5173)"
+	@echo "  frontend-build  Production build of the frontend"
+	@echo "  up              Start everything (infra + platform + services + frontend)"
 	@echo "  down            Stop everything"
 	@echo "  logs            Tail all logs"
 	@echo "  ps              List running containers"
@@ -40,11 +44,23 @@ services-up:
 services-down:
 	$(COMPOSE) --profile services down
 
+frontend-up:
+	$(COMPOSE) --profile frontend up -d --build
+
+frontend-down:
+	$(COMPOSE) --profile frontend down
+
+frontend-dev:
+	cd frontend-web && npm install && npm run dev
+
+frontend-build:
+	cd frontend-web && npm install && npm run build
+
 up:
-	$(COMPOSE) --profile infra --profile platform --profile services up -d --build
+	$(COMPOSE) --profile infra --profile platform --profile services --profile frontend up -d --build
 
 down:
-	$(COMPOSE) --profile infra --profile platform --profile services down
+	$(COMPOSE) --profile infra --profile platform --profile services --profile frontend down
 
 logs:
 	$(COMPOSE) logs -f --tail=100

@@ -472,6 +472,24 @@ services:
       timeout: 5s
       retries: 15
 
+  # ---------------------------------------------------------------- FRONTEND (Phase 4)
+  frontend-web:
+    build:
+      context: ./frontend-web
+      dockerfile: Dockerfile
+    profiles: [frontend]
+    image: naja7i/frontend-web:dev
+    depends_on:
+      api-gateway: { condition: service_healthy }
+    environment:
+      <<: *common-env
+    ports: ["5173:80"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
 volumes:
   pgdata:
   mongodata:

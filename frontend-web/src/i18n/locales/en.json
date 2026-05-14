@@ -1,0 +1,191 @@
+{
+  "app": {
+    "name": "NAJA7I",
+    "tagline": "Learn, succeed."
+  },
+  "common": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "loading": "Loading…",
+    "retry": "Retry",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "logout": "Log out",
+    "soon": "Soon",
+    "yes": "Yes",
+    "no": "No",
+    "search": "Search",
+    "close": "Close",
+    "continue": "Continue",
+    "or": "or"
+  },
+  "roles": {
+    "STUDENT": "Student",
+    "PROF": "Teacher",
+    "ADMIN": "Administrator",
+    "PARENT": "Parent"
+  },
+  "modality": {
+    "ONLINE": "Online",
+    "DOMICILE": "At home",
+    "LOCAL": "At venue"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "bookings": "My bookings",
+    "calendar": "My calendar",
+    "pricing": "My pricing",
+    "wallet": "My wallet",
+    "chat": "Messages",
+    "profile": "My profile",
+    "validations": "Teacher validations",
+    "topups": "Top-ups",
+    "payouts": "Payouts",
+    "disputes": "Disputes",
+    "audit": "Audit",
+    "admin_section": "Administration"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Access your NAJA7I account.",
+      "phone_or_email": "Phone or email",
+      "password": "Password",
+      "submit": "Sign in",
+      "forgot": "Forgot your password?",
+      "no_account": "Don't have an account?",
+      "register_link": "Create one"
+    },
+    "register": {
+      "title": "Create an account",
+      "subtitle": "Join NAJA7I in under 2 minutes.",
+      "phone": "Phone (Morocco)",
+      "phone_hint": "Format: +212XXXXXXXXX or 0XXXXXXXXX",
+      "email": "Email (optional)",
+      "password": "Password",
+      "password_hint": "At least 8 characters with a letter and a digit.",
+      "confirm_password": "Confirm password",
+      "role": "I am a",
+      "locale": "Language",
+      "accept_terms": "I accept the terms of service.",
+      "prof_notice": "Teacher accounts must be validated by an administrator before they can teach.",
+      "submit": "Sign up",
+      "have_account": "Already have an account?",
+      "login_link": "Sign in",
+      "strength": {
+        "weak": "Weak",
+        "fair": "Fair",
+        "good": "Good",
+        "strong": "Strong"
+      }
+    },
+    "otp": {
+      "title": "Verify your code",
+      "subtitle": "Enter the 6-digit code we sent via SMS / WhatsApp.",
+      "code": "OTP code",
+      "submit": "Verify",
+      "resend": "Resend code",
+      "resend_in": "Resend in {{seconds}}s",
+      "channel": "Resend channel",
+      "channel_sms": "SMS",
+      "channel_wa": "WhatsApp"
+    },
+    "reset_request": {
+      "title": "Forgot password",
+      "subtitle": "Enter your phone or email to receive a reset link.",
+      "phone_or_email": "Phone or email",
+      "submit": "Send link",
+      "success": "If an account exists, a reset link has been sent.",
+      "back_to_login": "Back to sign in"
+    },
+    "reset_confirm": {
+      "title": "Reset your password",
+      "subtitle": "Choose a new password.",
+      "token": "Reset token",
+      "new_password": "New password",
+      "confirm_password": "Confirm new password",
+      "submit": "Reset",
+      "success": "Password updated. You can now sign in."
+    },
+    "errors": {
+      "required": "This field is required.",
+      "invalid_phone": "Invalid Moroccan phone. Use +212XXXXXXXXX or 0XXXXXXXXX.",
+      "invalid_email": "Invalid email address.",
+      "invalid_otp": "The code must be 4 to 8 digits.",
+      "weak_password": "Password too weak. Min 8 chars with one letter and one digit.",
+      "passwords_mismatch": "Passwords do not match.",
+      "terms_required": "You must accept the terms to continue."
+    }
+  },
+  "errors": {
+    "AUTH_INVALID_CREDENTIALS": "Invalid credentials.",
+    "AUTH_OTP_EXPIRED": "OTP expired. Please request a new one.",
+    "AUTH_OTP_INVALID": "Incorrect OTP code.",
+    "AUTH_USER_SUSPENDED": "Your account is suspended. Please contact support.",
+    "AUTH_TOKEN_EXPIRED": "Session expired. Please sign in again.",
+    "AUTH_TOKEN_INVALID": "Invalid session. Please sign in again.",
+    "AUTH_FORBIDDEN_ROLE": "You don't have the required permission.",
+    "AUTH_RATE_LIMITED": "Too many attempts. Try again in a few minutes.",
+    "VALIDATION_FAILED": "The submitted data is invalid.",
+    "RESOURCE_NOT_FOUND": "Resource not found.",
+    "RATE_LIMITED": "Too many requests. Please wait.",
+    "EXTERNAL_DEPENDENCY_FAILURE": "External service unavailable. Try again later.",
+    "INTERNAL_ERROR": "Something went wrong. Please retry.",
+    "NETWORK_ERROR": "No connection to the server.",
+    "generic": "Something went wrong."
+  },
+  "landing": {
+    "hero_title": "Find your private tutor in Morocco.",
+    "hero_subtitle": "Online, at home or in a venue. Secure MAD payments. Hand-validated teachers.",
+    "cta_start": "Get started",
+    "cta_login": "I already have an account",
+    "stats_profs": "More than {{count}} validated teachers",
+    "stats_sessions": "{{count}} sessions delivered",
+    "modalities_title": "Three ways to learn",
+    "modality_online_desc": "Secure live video lessons with replay.",
+    "modality_domicile_desc": "Your tutor comes to you, in all major cities.",
+    "modality_local_desc": "Learn in person at a partner venue."
+  },
+  "dashboard": {
+    "welcome": "Hello, {{name}}",
+    "kpi": {
+      "balance": "Balance",
+      "upcoming_sessions": "Upcoming sessions",
+      "hours_done": "Hours done",
+      "pending_bookings": "Pending bookings",
+      "rating": "Average rating",
+      "validation_status": "Validation status",
+      "pending_profs": "Pending teachers",
+      "pending_topups": "Pending top-ups",
+      "pending_payouts": "Pending payouts",
+      "open_disputes": "Open disputes"
+    },
+    "quick_actions": "Quick actions",
+    "student": {
+      "find_tutor": "Find a tutor",
+      "topup_wallet": "Top up wallet",
+      "view_bookings": "View my bookings"
+    },
+    "prof": {
+      "calendar": "My calendar",
+      "pricing": "My pricing",
+      "bookings": "My bookings"
+    },
+    "admin": {
+      "validations": "Validate teachers",
+      "topups": "Validate top-ups",
+      "payouts": "Process payouts",
+      "disputes": "Manage disputes"
+    }
+  },
+  "page": {
+    "not_found_title": "Page not found",
+    "not_found_desc": "The page you're looking for doesn't exist or has moved.",
+    "not_found_cta": "Back home",
+    "forbidden_title": "Access denied",
+    "forbidden_desc": "Your role doesn't allow you to access this page."
+  }
+}

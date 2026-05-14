@@ -1,0 +1,191 @@
+{
+  "app": {
+    "name": "NAJA7I",
+    "tagline": "Apprends, réussis."
+  },
+  "common": {
+    "submit": "Valider",
+    "cancel": "Annuler",
+    "back": "Retour",
+    "next": "Suivant",
+    "loading": "Chargement…",
+    "retry": "Réessayer",
+    "save": "Enregistrer",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "logout": "Déconnexion",
+    "soon": "Bientôt",
+    "yes": "Oui",
+    "no": "Non",
+    "search": "Rechercher",
+    "close": "Fermer",
+    "continue": "Continuer",
+    "or": "ou"
+  },
+  "roles": {
+    "STUDENT": "Étudiant",
+    "PROF": "Professeur",
+    "ADMIN": "Administrateur",
+    "PARENT": "Parent"
+  },
+  "modality": {
+    "ONLINE": "En ligne",
+    "DOMICILE": "À domicile",
+    "LOCAL": "Au local"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "bookings": "Mes réservations",
+    "calendar": "Mon calendrier",
+    "pricing": "Mes tarifs",
+    "wallet": "Mon solde",
+    "chat": "Messagerie",
+    "profile": "Mon profil",
+    "validations": "Validations profs",
+    "topups": "Recharges",
+    "payouts": "Virements",
+    "disputes": "Litiges",
+    "audit": "Audit",
+    "admin_section": "Administration"
+  },
+  "auth": {
+    "login": {
+      "title": "Connexion",
+      "subtitle": "Accédez à votre espace NAJA7I.",
+      "phone_or_email": "Téléphone ou e-mail",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "forgot": "Mot de passe oublié ?",
+      "no_account": "Pas encore de compte ?",
+      "register_link": "Créer un compte"
+    },
+    "register": {
+      "title": "Créer un compte",
+      "subtitle": "Rejoignez NAJA7I en moins de 2 minutes.",
+      "phone": "Téléphone (Maroc)",
+      "phone_hint": "Format : +212XXXXXXXXX ou 0XXXXXXXXX",
+      "email": "E-mail (optionnel)",
+      "password": "Mot de passe",
+      "password_hint": "Au moins 8 caractères, une lettre et un chiffre.",
+      "confirm_password": "Confirmer le mot de passe",
+      "role": "Je suis",
+      "locale": "Langue",
+      "accept_terms": "J'accepte les conditions générales d'utilisation.",
+      "prof_notice": "Les profils professeurs doivent être validés par un administrateur avant de pouvoir enseigner.",
+      "submit": "S'inscrire",
+      "have_account": "Déjà inscrit ?",
+      "login_link": "Se connecter",
+      "strength": {
+        "weak": "Faible",
+        "fair": "Moyen",
+        "good": "Bon",
+        "strong": "Fort"
+      }
+    },
+    "otp": {
+      "title": "Vérification du code",
+      "subtitle": "Saisissez le code à 6 chiffres reçu par SMS / WhatsApp.",
+      "code": "Code OTP",
+      "submit": "Vérifier",
+      "resend": "Renvoyer le code",
+      "resend_in": "Renvoyer dans {{seconds}} s",
+      "channel": "Canal de renvoi",
+      "channel_sms": "SMS",
+      "channel_wa": "WhatsApp"
+    },
+    "reset_request": {
+      "title": "Mot de passe oublié",
+      "subtitle": "Saisissez votre téléphone ou e-mail pour recevoir un lien de réinitialisation.",
+      "phone_or_email": "Téléphone ou e-mail",
+      "submit": "Envoyer le lien",
+      "success": "Si le compte existe, un lien vient d'être envoyé.",
+      "back_to_login": "Retour à la connexion"
+    },
+    "reset_confirm": {
+      "title": "Réinitialiser le mot de passe",
+      "subtitle": "Choisissez un nouveau mot de passe.",
+      "token": "Jeton de réinitialisation",
+      "new_password": "Nouveau mot de passe",
+      "confirm_password": "Confirmer le nouveau mot de passe",
+      "submit": "Réinitialiser",
+      "success": "Mot de passe mis à jour. Vous pouvez vous reconnecter."
+    },
+    "errors": {
+      "required": "Champ obligatoire.",
+      "invalid_phone": "Numéro marocain invalide. Format attendu : +212XXXXXXXXX ou 0XXXXXXXXX.",
+      "invalid_email": "Adresse e-mail invalide.",
+      "invalid_otp": "Le code doit contenir entre 4 et 8 chiffres.",
+      "weak_password": "Mot de passe trop faible. Minimum 8 caractères, au moins une lettre et un chiffre.",
+      "passwords_mismatch": "Les mots de passe ne correspondent pas.",
+      "terms_required": "Vous devez accepter les conditions pour continuer."
+    }
+  },
+  "errors": {
+    "AUTH_INVALID_CREDENTIALS": "Identifiants invalides.",
+    "AUTH_OTP_EXPIRED": "Code OTP expiré. Veuillez en demander un nouveau.",
+    "AUTH_OTP_INVALID": "Code OTP incorrect.",
+    "AUTH_USER_SUSPENDED": "Votre compte est suspendu. Contactez le support.",
+    "AUTH_TOKEN_EXPIRED": "Session expirée. Reconnectez-vous.",
+    "AUTH_TOKEN_INVALID": "Session invalide. Reconnectez-vous.",
+    "AUTH_FORBIDDEN_ROLE": "Vous n'avez pas l'autorisation requise.",
+    "AUTH_RATE_LIMITED": "Trop de tentatives. Réessayez dans quelques minutes.",
+    "VALIDATION_FAILED": "Les données fournies sont invalides.",
+    "RESOURCE_NOT_FOUND": "Ressource introuvable.",
+    "RATE_LIMITED": "Trop de requêtes. Patientez un instant.",
+    "EXTERNAL_DEPENDENCY_FAILURE": "Service externe indisponible. Réessayez plus tard.",
+    "INTERNAL_ERROR": "Une erreur est survenue. Réessayez.",
+    "NETWORK_ERROR": "Pas de connexion au serveur.",
+    "generic": "Une erreur est survenue."
+  },
+  "landing": {
+    "hero_title": "Trouve ton prof particulier au Maroc.",
+    "hero_subtitle": "Cours en ligne, à domicile ou au local. Paiement sécurisé en MAD. Profs validés un par un.",
+    "cta_start": "Commencer",
+    "cta_login": "J'ai déjà un compte",
+    "stats_profs": "Plus de {{count}} profs validés",
+    "stats_sessions": "{{count}} séances réalisées",
+    "modalities_title": "Trois façons d'apprendre",
+    "modality_online_desc": "Cours en visio sécurisée avec replay.",
+    "modality_domicile_desc": "Le prof se déplace chez vous, dans toutes les grandes villes.",
+    "modality_local_desc": "Apprenez en présentiel dans un local partenaire."
+  },
+  "dashboard": {
+    "welcome": "Bonjour, {{name}}",
+    "kpi": {
+      "balance": "Solde",
+      "upcoming_sessions": "Séances à venir",
+      "hours_done": "Heures effectuées",
+      "pending_bookings": "Réservations en attente",
+      "rating": "Note moyenne",
+      "validation_status": "Statut de validation",
+      "pending_profs": "Profs en attente",
+      "pending_topups": "Recharges en attente",
+      "pending_payouts": "Virements en attente",
+      "open_disputes": "Litiges ouverts"
+    },
+    "quick_actions": "Actions rapides",
+    "student": {
+      "find_tutor": "Trouver un prof",
+      "topup_wallet": "Recharger mon solde",
+      "view_bookings": "Voir mes réservations"
+    },
+    "prof": {
+      "calendar": "Mon calendrier",
+      "pricing": "Mes tarifs",
+      "bookings": "Mes réservations"
+    },
+    "admin": {
+      "validations": "Valider les profs",
+      "topups": "Valider les recharges",
+      "payouts": "Traiter les virements",
+      "disputes": "Gérer les litiges"
+    }
+  },
+  "page": {
+    "not_found_title": "Page introuvable",
+    "not_found_desc": "La page que vous cherchez n'existe pas ou a été déplacée.",
+    "not_found_cta": "Retour à l'accueil",
+    "forbidden_title": "Accès refusé",
+    "forbidden_desc": "Votre rôle ne vous permet pas d'accéder à cette page."
+  }
+}

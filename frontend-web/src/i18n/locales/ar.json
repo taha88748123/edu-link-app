@@ -1,0 +1,191 @@
+{
+  "app": {
+    "name": "نجاحي",
+    "tagline": "تعلّم، انجح."
+  },
+  "common": {
+    "submit": "تأكيد",
+    "cancel": "إلغاء",
+    "back": "رجوع",
+    "next": "التالي",
+    "loading": "جارٍ التحميل…",
+    "retry": "إعادة المحاولة",
+    "save": "حفظ",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "logout": "تسجيل الخروج",
+    "soon": "قريباً",
+    "yes": "نعم",
+    "no": "لا",
+    "search": "بحث",
+    "close": "إغلاق",
+    "continue": "متابعة",
+    "or": "أو"
+  },
+  "roles": {
+    "STUDENT": "طالب",
+    "PROF": "أستاذ",
+    "ADMIN": "مسؤول",
+    "PARENT": "ولي أمر"
+  },
+  "modality": {
+    "ONLINE": "عن بُعد",
+    "DOMICILE": "في المنزل",
+    "LOCAL": "في المركز"
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "bookings": "حجوزاتي",
+    "calendar": "أجندتي",
+    "pricing": "أسعاري",
+    "wallet": "رصيدي",
+    "chat": "الرسائل",
+    "profile": "ملفي",
+    "validations": "المصادقة على الأساتذة",
+    "topups": "تعبئات الرصيد",
+    "payouts": "التحويلات",
+    "disputes": "النزاعات",
+    "audit": "السجلات",
+    "admin_section": "الإدارة"
+  },
+  "auth": {
+    "login": {
+      "title": "تسجيل الدخول",
+      "subtitle": "ادخل إلى فضائك على نجاحي.",
+      "phone_or_email": "الهاتف أو البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "submit": "تسجيل الدخول",
+      "forgot": "هل نسيت كلمة المرور؟",
+      "no_account": "ليس لديك حساب؟",
+      "register_link": "إنشاء حساب"
+    },
+    "register": {
+      "title": "إنشاء حساب",
+      "subtitle": "انضم إلى نجاحي في أقل من دقيقتين.",
+      "phone": "الهاتف (المغرب)",
+      "phone_hint": "الصيغة: +212XXXXXXXXX أو 0XXXXXXXXX",
+      "email": "البريد الإلكتروني (اختياري)",
+      "password": "كلمة المرور",
+      "password_hint": "8 أحرف على الأقل، حرف وأرقام.",
+      "confirm_password": "تأكيد كلمة المرور",
+      "role": "أنا",
+      "locale": "اللغة",
+      "accept_terms": "أوافق على الشروط العامة للاستخدام.",
+      "prof_notice": "تتطلب حسابات الأساتذة مصادقة المسؤول قبل بدء التدريس.",
+      "submit": "تسجيل",
+      "have_account": "هل لديك حساب؟",
+      "login_link": "تسجيل الدخول",
+      "strength": {
+        "weak": "ضعيفة",
+        "fair": "متوسطة",
+        "good": "جيدة",
+        "strong": "قوية"
+      }
+    },
+    "otp": {
+      "title": "التحقق من الرمز",
+      "subtitle": "أدخل الرمز المكوّن من 6 أرقام الذي تلقيته عبر SMS أو واتساب.",
+      "code": "رمز التحقق",
+      "submit": "تحقق",
+      "resend": "إعادة إرسال الرمز",
+      "resend_in": "إعادة الإرسال خلال {{seconds}} ث",
+      "channel": "قناة إعادة الإرسال",
+      "channel_sms": "SMS",
+      "channel_wa": "واتساب"
+    },
+    "reset_request": {
+      "title": "نسيت كلمة المرور",
+      "subtitle": "أدخل هاتفك أو بريدك لإرسال رابط إعادة التعيين.",
+      "phone_or_email": "الهاتف أو البريد الإلكتروني",
+      "submit": "إرسال الرابط",
+      "success": "إذا كان الحساب موجوداً، فقد تم إرسال الرابط.",
+      "back_to_login": "العودة إلى تسجيل الدخول"
+    },
+    "reset_confirm": {
+      "title": "إعادة تعيين كلمة المرور",
+      "subtitle": "اختر كلمة مرور جديدة.",
+      "token": "رمز إعادة التعيين",
+      "new_password": "كلمة المرور الجديدة",
+      "confirm_password": "تأكيد كلمة المرور",
+      "submit": "إعادة التعيين",
+      "success": "تم تحديث كلمة المرور. يمكنك تسجيل الدخول الآن."
+    },
+    "errors": {
+      "required": "هذا الحقل إلزامي.",
+      "invalid_phone": "رقم هاتف مغربي غير صالح. الصيغة: +212XXXXXXXXX أو 0XXXXXXXXX.",
+      "invalid_email": "بريد إلكتروني غير صالح.",
+      "invalid_otp": "يجب أن يحتوي الرمز على 4 إلى 8 أرقام.",
+      "weak_password": "كلمة مرور ضعيفة. على الأقل 8 أحرف، حرف وأرقام.",
+      "passwords_mismatch": "كلمتا المرور غير متطابقتين.",
+      "terms_required": "يجب الموافقة على الشروط للمتابعة."
+    }
+  },
+  "errors": {
+    "AUTH_INVALID_CREDENTIALS": "معلومات الدخول غير صحيحة.",
+    "AUTH_OTP_EXPIRED": "انتهت صلاحية الرمز. اطلب رمزاً جديداً.",
+    "AUTH_OTP_INVALID": "الرمز غير صحيح.",
+    "AUTH_USER_SUSPENDED": "حسابك موقوف. تواصل مع الدعم.",
+    "AUTH_TOKEN_EXPIRED": "انتهت الجلسة. سجّل الدخول من جديد.",
+    "AUTH_TOKEN_INVALID": "جلسة غير صالحة. سجّل الدخول من جديد.",
+    "AUTH_FORBIDDEN_ROLE": "ليس لديك الصلاحية اللازمة.",
+    "AUTH_RATE_LIMITED": "محاولات كثيرة. حاول بعد قليل.",
+    "VALIDATION_FAILED": "البيانات المدخلة غير صالحة.",
+    "RESOURCE_NOT_FOUND": "المورد غير موجود.",
+    "RATE_LIMITED": "طلبات كثيرة. انتظر قليلاً.",
+    "EXTERNAL_DEPENDENCY_FAILURE": "خدمة خارجية غير متاحة. حاول لاحقاً.",
+    "INTERNAL_ERROR": "حدث خطأ. حاول مجدداً.",
+    "NETWORK_ERROR": "لا اتصال بالخادم.",
+    "generic": "حدث خطأ ما."
+  },
+  "landing": {
+    "hero_title": "اعثر على أستاذك الخاص في المغرب.",
+    "hero_subtitle": "دروس عن بُعد، في المنزل أو في المركز. دفع آمن بالدرهم. أساتذة معتمدون.",
+    "cta_start": "ابدأ الآن",
+    "cta_login": "لدي حساب بالفعل",
+    "stats_profs": "أكثر من {{count}} أستاذ معتمد",
+    "stats_sessions": "{{count}} حصة منجزة",
+    "modalities_title": "ثلاث طرق للتعلم",
+    "modality_online_desc": "دروس مرئية آمنة مع إعادة المشاهدة.",
+    "modality_domicile_desc": "الأستاذ يأتي إلى منزلك في جميع المدن الكبرى.",
+    "modality_local_desc": "تعلم حضورياً في مركز شريك."
+  },
+  "dashboard": {
+    "welcome": "مرحباً، {{name}}",
+    "kpi": {
+      "balance": "الرصيد",
+      "upcoming_sessions": "الحصص القادمة",
+      "hours_done": "الساعات المنجزة",
+      "pending_bookings": "حجوزات معلقة",
+      "rating": "المتوسط",
+      "validation_status": "حالة المصادقة",
+      "pending_profs": "أساتذة في الانتظار",
+      "pending_topups": "تعبئات في الانتظار",
+      "pending_payouts": "تحويلات في الانتظار",
+      "open_disputes": "نزاعات مفتوحة"
+    },
+    "quick_actions": "إجراءات سريعة",
+    "student": {
+      "find_tutor": "البحث عن أستاذ",
+      "topup_wallet": "تعبئة الرصيد",
+      "view_bookings": "حجوزاتي"
+    },
+    "prof": {
+      "calendar": "أجندتي",
+      "pricing": "أسعاري",
+      "bookings": "حجوزاتي"
+    },
+    "admin": {
+      "validations": "مصادقة الأساتذة",
+      "topups": "مصادقة التعبئات",
+      "payouts": "معالجة التحويلات",
+      "disputes": "إدارة النزاعات"
+    }
+  },
+  "page": {
+    "not_found_title": "الصفحة غير موجودة",
+    "not_found_desc": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها.",
+    "not_found_cta": "العودة إلى الرئيسية",
+    "forbidden_title": "الوصول مرفوض",
+    "forbidden_desc": "دورك لا يسمح بالوصول إلى هذه الصفحة."
+  }
+}
