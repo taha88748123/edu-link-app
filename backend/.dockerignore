@@ -1,0 +1,12 @@
+# Exclude build artefacts and IDE/OS junk from Docker build context.
+# Maven needs the full module list to validate the parent POM's <modules>,
+# so service Dockerfiles COPY . . (all 13 modules) — we just keep the
+# context small by excluding everything that's regenerated.
+**/target/
+**/.mvn/wrapper/maven-wrapper.jar
+**/*.iml
+**/.idea/
+**/.vscode/
+**/.DS_Store
+**/Thumbs.db
+**/*.log
