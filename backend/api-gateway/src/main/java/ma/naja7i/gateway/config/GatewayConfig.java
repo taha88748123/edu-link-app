@@ -7,7 +7,7 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
@@ -21,17 +21,26 @@ public class GatewayConfig {
         return new JwtService(props.getSecret(), props.getAccessTtl(), props.getIssuer());
     }
 
+    /**
+     * CORS is applied via a {@link CorsWebFilter} bean — Spring Cloud Gateway is
+     * reactive, so a plain {@code CorsConfigurationSource} bean is NOT picked up
+     * by the gateway filter chain. The filter intercepts every request (including
+     * the OPTIONS preflight) and emits the Access-Control-Allow-* headers.
+     */
     @Bean
-    public CorsConfigurationSource corsConfigurationSource(CorsProperties props) {
+    public CorsWebFilter corsWebFilter(CorsProperties props) {
         CorsConfiguration cors = new CorsConfiguration();
         cors.setAllowedOrigins(props.getAllowedOrigins());
         cors.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         cors.setAllowedHeaders(List.of("*"));
+        cors.setExposedHeaders(List.of("X-Trace-Id",
+                "X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset",
+                "Retry-After"));
         cors.setAllowCredentials(true);
         cors.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", cors);
-        return source;
+        return new CorsWebFilter(source);
     }
 
     /**
