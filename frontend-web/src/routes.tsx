@@ -29,7 +29,19 @@ import ProfWalletPage from './pages/protected/prof/ProfWalletPage';
 import BookingsListPage from './pages/protected/bookings/BookingsListPage';
 import BookingDetailPage from './pages/protected/bookings/BookingDetailPage';
 
+import ChatListPage from './pages/protected/chat/ChatListPage';
+import ChatDetailPage from './pages/protected/chat/ChatDetailPage';
+import VideoLobbyPage from './pages/protected/video/VideoLobbyPage';
+import VideoRoomPage from './pages/protected/video/VideoRoomPage';
+
 import AdminDashboardPage from './pages/protected/admin/AdminDashboardPage';
+import AdminValidationsPage from './pages/protected/admin/AdminValidationsPage';
+import AdminTopupsPage from './pages/protected/admin/AdminTopupsPage';
+import AdminPayoutsPage from './pages/protected/admin/AdminPayoutsPage';
+import AdminDisputesPage from './pages/protected/admin/AdminDisputesPage';
+import AdminAuditPage from './pages/protected/admin/AdminAuditPage';
+import AdminBalanceAdjustPage from './pages/protected/admin/AdminBalanceAdjustPage';
+
 import NotFoundPage from './pages/protected/NotFoundPage';
 import ForbiddenPage from './pages/protected/ForbiddenPage';
 
@@ -208,12 +220,96 @@ export const router = createBrowserRouter([
             ),
           },
 
-          // ADMIN routes (placeholder for now)
+          // CHAT (STUDENT, PARENT, PROF — backend enforces participant scoping)
+          {
+            path: '/chat',
+            element: (
+              <RequireRole allow={['STUDENT', 'PARENT', 'PROF']}>
+                <ChatListPage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/chat/:conversationId',
+            element: (
+              <RequireRole allow={['STUDENT', 'PARENT', 'PROF']}>
+                <ChatDetailPage />
+              </RequireRole>
+            ),
+          },
+
+          // VIDEO ROOM (STUDENT, PARENT, PROF)
+          {
+            path: '/video/sessions/:sessionId/lobby',
+            element: (
+              <RequireRole allow={['STUDENT', 'PARENT', 'PROF']}>
+                <VideoLobbyPage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/video/sessions/:sessionId',
+            element: (
+              <RequireRole allow={['STUDENT', 'PARENT', 'PROF']}>
+                <VideoRoomPage />
+              </RequireRole>
+            ),
+          },
+
+          // ADMIN routes
           {
             path: '/admin',
             element: (
               <RequireRole allow={['ADMIN']}>
                 <AdminDashboardPage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/admin/validations',
+            element: (
+              <RequireRole allow={['ADMIN']}>
+                <AdminValidationsPage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/admin/topups',
+            element: (
+              <RequireRole allow={['ADMIN']}>
+                <AdminTopupsPage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/admin/payouts',
+            element: (
+              <RequireRole allow={['ADMIN']}>
+                <AdminPayoutsPage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/admin/disputes',
+            element: (
+              <RequireRole allow={['ADMIN']}>
+                <AdminDisputesPage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/admin/audit',
+            element: (
+              <RequireRole allow={['ADMIN']}>
+                <AdminAuditPage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/admin/balance-adjust',
+            element: (
+              <RequireRole allow={['ADMIN']}>
+                <AdminBalanceAdjustPage />
               </RequireRole>
             ),
           },

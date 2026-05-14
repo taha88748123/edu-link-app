@@ -88,6 +88,7 @@
     "payouts": "Payouts",
     "disputes": "Disputes",
     "audit": "Audit",
+    "balance_adjust": "Balance adjustment",
     "admin_section": "Administration"
   },
   "auth": {
@@ -478,6 +479,236 @@
         "REJECTED": "Rejected"
       },
       "success": "Request sent."
+    }
+  },
+  "chat": {
+    "title": "Messages",
+    "detail_title": "Conversation",
+    "thread_title": "Thread",
+    "empty": "No conversation yet.",
+    "no_messages": "No messages. Start the conversation.",
+    "send": "Send",
+    "compose_placeholder": "Write your message…",
+    "typing": "{{name}} is typing…",
+    "unread_count": "{{count}} unread message(s)",
+    "closed_notice": "This conversation is closed. You can no longer send messages.",
+    "info": {
+      "title": "Details",
+      "booking_link": "View booking"
+    },
+    "status": {
+      "PRE_ACCEPT": "Pre-acceptance",
+      "POST_ACCEPT": "Accepted",
+      "CLOSED": "Closed"
+    },
+    "presence": {
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "message": {
+      "moderation_hint": "Automatic moderation applied",
+      "no_body": "Empty message"
+    }
+  },
+  "video": {
+    "lobby": {
+      "title": "Session pre-check",
+      "session_info": "Session information",
+      "join_now": "Join the session",
+      "privacy_notice": "The session will only be recorded with mutual consent."
+    },
+    "device_check": {
+      "title": "Camera & microphone check",
+      "preview_alt": "Camera preview",
+      "mic_level": "Microphone level",
+      "error": "Cannot access camera or microphone. Check your browser permissions."
+    },
+    "room": {
+      "title": "Live session",
+      "grid_title": "Video conference",
+      "connecting": "Connecting to the video room…",
+      "no_participants": "Waiting for the other participant…"
+    },
+    "side_panel": {
+      "title": "Tools",
+      "whiteboard": "Whiteboard",
+      "quiz": "Quiz",
+      "notes": "Notes",
+      "whiteboard_placeholder": "Collaborative whiteboard coming soon. You can save a blank snapshot for testing.",
+      "quiz_placeholder": "Quiz editor lands in v2. You can create an empty artifact for testing.",
+      "notes_placeholder": "Free-form notes for this session…",
+      "snapshot": "Save snapshot",
+      "add_quiz": "Create empty quiz"
+    },
+    "consent": {
+      "banner": "Recording requires mutual consent of both participants.",
+      "grant": "Grant my consent"
+    },
+    "controls": {
+      "mic_on": "Enable microphone",
+      "mic_off": "Mute microphone",
+      "camera_on": "Enable camera",
+      "camera_off": "Disable camera",
+      "screen_share": "Share screen",
+      "leave": "Leave"
+    },
+    "field": {
+      "scheduled": "Scheduled for",
+      "status": "Status"
+    },
+    "status": {
+      "SCHEDULED": "Scheduled",
+      "LIVE": "Live",
+      "ENDED": "Ended",
+      "FAILED": "Failed",
+      "EXPIRED": "Expired"
+    },
+    "errors": {
+      "connect_failed": "LiveKit server unavailable (dev mode — JWT issued but no server)."
+    }
+  },
+  "admin": {
+    "validations": {
+      "title": "Teacher validations",
+      "empty": "No teacher awaiting validation.",
+      "detail_title": "Teacher file",
+      "columns": {
+        "submitted": "Submitted",
+        "prof": "Teacher",
+        "diplomas": "Diplomas",
+        "score": "AI score"
+      },
+      "validate": "Validate",
+      "reject": "Reject",
+      "request_interview": "Request interview",
+      "diplomas": "Diplomas",
+      "ai_score": "AI score",
+      "notes": "Notes",
+      "reject_dialog": {
+        "title": "Reject this teacher?",
+        "desc": "Please provide a reason. The teacher will be notified.",
+        "placeholder": "Reason for rejection…"
+      }
+    },
+    "topups": {
+      "title": "Pending top-ups",
+      "empty": "No top-up to process.",
+      "columns": {
+        "submitted": "Submitted",
+        "student": "Student",
+        "method": "Method",
+        "amount": "Amount requested",
+        "proof": "Proof"
+      },
+      "actions": {
+        "approve": "Approve",
+        "modify": "Modify",
+        "reject": "Reject"
+      },
+      "dialog": {
+        "APPROVE": "Approve top-up",
+        "MODIFY": "Modify approved amount",
+        "REJECT": "Reject top-up",
+        "approved_amount": "Approved amount (MAD)",
+        "notes": "Notes (optional)"
+      }
+    },
+    "payouts": {
+      "title": "Payouts",
+      "empty": "No payout for this filter.",
+      "columns": {
+        "requested": "Requested",
+        "prof": "Teacher",
+        "amount": "Amount",
+        "iban": "IBAN / RIB"
+      },
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject",
+        "mark_paid": "Mark as paid"
+      },
+      "dialog": {
+        "APPROVE": "Approve payout",
+        "REJECT": "Reject payout",
+        "mark_paid": "Mark as paid",
+        "payment_ref": "Payment reference",
+        "payment_ref_placeholder": "e.g. WIRE-2024-09-01-XYZ",
+        "notes": "Notes (optional)"
+      },
+      "errors": {
+        "payment_ref_required": "Payment reference is required."
+      }
+    },
+    "disputes": {
+      "title": "Open disputes",
+      "empty": "No open dispute.",
+      "resolve": "Resolve",
+      "columns": {
+        "booking": "Booking",
+        "when": "When",
+        "subject": "Subject",
+        "amount": "Amount"
+      },
+      "dialog": {
+        "title": "Resolve the dispute",
+        "decision": "Decision",
+        "dispute_id": "Dispute ID",
+        "dispute_id_hint": "The dispute ID is shown on the booking detail page.",
+        "prof_share": "Teacher share (MAD)",
+        "student_refund": "Student refund (MAD)",
+        "notes": "Notes"
+      },
+      "decision": {
+        "REFUND": "Refund the student",
+        "PAY_PROF": "Pay the teacher",
+        "SPLIT": "Split"
+      },
+      "errors": {
+        "invalid_decision": "Invalid decision.",
+        "dispute_id_required": "Dispute ID is required.",
+        "prof_share_required": "Teacher share must be a positive amount.",
+        "student_refund_required": "Student refund must be a positive amount."
+      }
+    },
+    "audit": {
+      "title": "Audit log",
+      "intro": "Enter a user ID to view their operations.",
+      "empty": "No operation for this filter.",
+      "export_csv": "Export as CSV",
+      "filter": {
+        "user_id": "User ID",
+        "from": "From",
+        "to": "To"
+      },
+      "columns": {
+        "when": "When",
+        "operation": "Operation",
+        "amount": "Amount",
+        "balance": "Balance",
+        "reference": "Reference",
+        "reason": "Reason"
+      },
+      "errors": {
+        "user_id_required": "Please enter a user ID first."
+      }
+    },
+    "balance_adjust": {
+      "title": "Manual balance adjustment",
+      "short_title": "Adjust a balance",
+      "form_title": "Enter the adjustment",
+      "warning_banner": "This operation will be traced in the immutable audit log.",
+      "user_id": "User ID",
+      "delta_mad": "Delta (MAD)",
+      "delta_hint": "Use a positive number to credit, negative to debit.",
+      "operation": "Operation type",
+      "reason": "Reason (required)",
+      "confirm_title": "Confirm the adjustment?",
+      "success": "Adjustment recorded.",
+      "errors": {
+        "user_required": "Please enter the user ID.",
+        "amount_required": "Delta must be different from zero.",
+        "reason_required": "Reason is required."
+      }
     }
   }
 }

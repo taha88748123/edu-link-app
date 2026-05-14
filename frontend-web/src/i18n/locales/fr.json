@@ -88,6 +88,7 @@
     "payouts": "Virements",
     "disputes": "Litiges",
     "audit": "Audit",
+    "balance_adjust": "Ajustement solde",
     "admin_section": "Administration"
   },
   "auth": {
@@ -478,6 +479,236 @@
         "REJECTED": "Rejeté"
       },
       "success": "Demande envoyée."
+    }
+  },
+  "chat": {
+    "title": "Messagerie",
+    "detail_title": "Conversation",
+    "thread_title": "Fil de discussion",
+    "empty": "Aucune conversation pour le moment.",
+    "no_messages": "Aucun message. Démarrez la conversation.",
+    "send": "Envoyer",
+    "compose_placeholder": "Écrivez votre message…",
+    "typing": "{{name}} est en train d'écrire…",
+    "unread_count": "{{count}} message(s) non lu(s)",
+    "closed_notice": "Cette conversation est fermée. Vous ne pouvez plus envoyer de message.",
+    "info": {
+      "title": "Détails",
+      "booking_link": "Voir la réservation"
+    },
+    "status": {
+      "PRE_ACCEPT": "Pré-acceptation",
+      "POST_ACCEPT": "Acceptée",
+      "CLOSED": "Fermée"
+    },
+    "presence": {
+      "online": "En ligne",
+      "offline": "Hors ligne"
+    },
+    "message": {
+      "moderation_hint": "Modération automatique appliquée",
+      "no_body": "Message sans contenu"
+    }
+  },
+  "video": {
+    "lobby": {
+      "title": "Préparation de la séance",
+      "session_info": "Informations sur la séance",
+      "join_now": "Rejoindre la séance",
+      "privacy_notice": "La séance ne sera enregistrée qu'avec le consentement mutuel."
+    },
+    "device_check": {
+      "title": "Test caméra et micro",
+      "preview_alt": "Aperçu de votre caméra",
+      "mic_level": "Niveau du micro",
+      "error": "Impossible d'accéder à la caméra ou au micro. Vérifiez les autorisations du navigateur."
+    },
+    "room": {
+      "title": "Séance en cours",
+      "grid_title": "Visioconférence",
+      "connecting": "Connexion à la salle de visio en cours…",
+      "no_participants": "En attente du second participant…"
+    },
+    "side_panel": {
+      "title": "Outils",
+      "whiteboard": "Tableau blanc",
+      "quiz": "Quiz",
+      "notes": "Notes",
+      "whiteboard_placeholder": "Le tableau blanc collaboratif arrivera bientôt. Vous pouvez déjà enregistrer un instantané vide pour test.",
+      "quiz_placeholder": "L'éditeur de quiz arrivera en v2. Vous pouvez créer un artefact vide pour test.",
+      "notes_placeholder": "Notes libres pour la séance…",
+      "snapshot": "Sauvegarder un instantané",
+      "add_quiz": "Créer un quiz vide"
+    },
+    "consent": {
+      "banner": "L'enregistrement nécessite le consentement mutuel des deux participants.",
+      "grant": "Donner mon consentement"
+    },
+    "controls": {
+      "mic_on": "Activer le micro",
+      "mic_off": "Couper le micro",
+      "camera_on": "Activer la caméra",
+      "camera_off": "Couper la caméra",
+      "screen_share": "Partager l'écran",
+      "leave": "Quitter"
+    },
+    "field": {
+      "scheduled": "Prévu pour",
+      "status": "Statut"
+    },
+    "status": {
+      "SCHEDULED": "Programmée",
+      "LIVE": "En direct",
+      "ENDED": "Terminée",
+      "FAILED": "Échec",
+      "EXPIRED": "Expirée"
+    },
+    "errors": {
+      "connect_failed": "Serveur LiveKit indisponible (mode dev — JWT émis sans serveur)."
+    }
+  },
+  "admin": {
+    "validations": {
+      "title": "Validations professeurs",
+      "empty": "Aucun professeur en attente.",
+      "detail_title": "Dossier du professeur",
+      "columns": {
+        "submitted": "Soumis le",
+        "prof": "Professeur",
+        "diplomas": "Diplômes",
+        "score": "Score IA"
+      },
+      "validate": "Valider",
+      "reject": "Rejeter",
+      "request_interview": "Demander un entretien",
+      "diplomas": "Diplômes",
+      "ai_score": "Score IA",
+      "notes": "Notes",
+      "reject_dialog": {
+        "title": "Rejeter ce professeur ?",
+        "desc": "Indiquez le motif du rejet. Le professeur sera notifié.",
+        "placeholder": "Motif du rejet…"
+      }
+    },
+    "topups": {
+      "title": "Recharges en attente",
+      "empty": "Aucune recharge à traiter.",
+      "columns": {
+        "submitted": "Soumis le",
+        "student": "Étudiant",
+        "method": "Mode",
+        "amount": "Montant demandé",
+        "proof": "Preuve"
+      },
+      "actions": {
+        "approve": "Approuver",
+        "modify": "Modifier",
+        "reject": "Rejeter"
+      },
+      "dialog": {
+        "APPROVE": "Approuver la recharge",
+        "MODIFY": "Modifier le montant approuvé",
+        "REJECT": "Rejeter la recharge",
+        "approved_amount": "Montant approuvé (MAD)",
+        "notes": "Notes (optionnel)"
+      }
+    },
+    "payouts": {
+      "title": "Virements",
+      "empty": "Aucun virement pour ce filtre.",
+      "columns": {
+        "requested": "Demandé le",
+        "prof": "Professeur",
+        "amount": "Montant",
+        "iban": "RIB / IBAN"
+      },
+      "actions": {
+        "approve": "Approuver",
+        "reject": "Rejeter",
+        "mark_paid": "Marquer comme payé"
+      },
+      "dialog": {
+        "APPROVE": "Approuver le virement",
+        "REJECT": "Rejeter le virement",
+        "mark_paid": "Marquer comme payé",
+        "payment_ref": "Référence de paiement",
+        "payment_ref_placeholder": "Ex : VIR-2024-09-01-XYZ",
+        "notes": "Notes (optionnel)"
+      },
+      "errors": {
+        "payment_ref_required": "La référence de paiement est obligatoire."
+      }
+    },
+    "disputes": {
+      "title": "Litiges ouverts",
+      "empty": "Aucun litige ouvert.",
+      "resolve": "Résoudre",
+      "columns": {
+        "booking": "Réservation",
+        "when": "Quand",
+        "subject": "Matière",
+        "amount": "Montant"
+      },
+      "dialog": {
+        "title": "Résolution du litige",
+        "decision": "Décision",
+        "dispute_id": "Identifiant du litige",
+        "dispute_id_hint": "L'identifiant du litige est disponible dans la fiche réservation.",
+        "prof_share": "Part professeur (MAD)",
+        "student_refund": "Remboursement étudiant (MAD)",
+        "notes": "Notes"
+      },
+      "decision": {
+        "REFUND": "Rembourser l'étudiant",
+        "PAY_PROF": "Payer le professeur",
+        "SPLIT": "Partager"
+      },
+      "errors": {
+        "invalid_decision": "Décision invalide.",
+        "dispute_id_required": "L'identifiant du litige est obligatoire.",
+        "prof_share_required": "La part du professeur doit être un montant positif.",
+        "student_refund_required": "Le remboursement étudiant doit être un montant positif."
+      }
+    },
+    "audit": {
+      "title": "Journal d'audit",
+      "intro": "Saisissez l'identifiant d'un utilisateur pour consulter ses opérations.",
+      "empty": "Aucune opération pour ce filtre.",
+      "export_csv": "Exporter en CSV",
+      "filter": {
+        "user_id": "Identifiant utilisateur",
+        "from": "Du",
+        "to": "Au"
+      },
+      "columns": {
+        "when": "Quand",
+        "operation": "Opération",
+        "amount": "Montant",
+        "balance": "Solde",
+        "reference": "Référence",
+        "reason": "Motif"
+      },
+      "errors": {
+        "user_id_required": "Saisissez d'abord un identifiant utilisateur."
+      }
+    },
+    "balance_adjust": {
+      "title": "Ajustement manuel du solde",
+      "short_title": "Ajuster un solde",
+      "form_title": "Saisir l'ajustement",
+      "warning_banner": "Cette opération sera tracée dans le journal d'audit immuable.",
+      "user_id": "Identifiant utilisateur",
+      "delta_mad": "Variation (MAD)",
+      "delta_hint": "Utilisez un nombre positif pour créditer, négatif pour débiter.",
+      "operation": "Type d'opération",
+      "reason": "Motif (obligatoire)",
+      "confirm_title": "Confirmer l'ajustement ?",
+      "success": "Ajustement enregistré.",
+      "errors": {
+        "user_required": "Saisissez l'identifiant de l'utilisateur.",
+        "amount_required": "La variation doit être différente de zéro.",
+        "reason_required": "Le motif est obligatoire."
+      }
     }
   }
 }

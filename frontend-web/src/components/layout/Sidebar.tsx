@@ -11,6 +11,7 @@ import {
   MessageSquare,
   ScrollText,
   Search,
+  ShieldAlert,
   Tag,
   Wallet,
 } from 'lucide-react';
@@ -33,7 +34,7 @@ const STUDENT_NAV: NavItem[] = [
   { to: '/student/discover', labelKey: 'nav.discover', icon: Search },
   { to: '/student/bookings', labelKey: 'nav.bookings', icon: ClipboardList },
   { to: '/student/wallet', labelKey: 'nav.wallet', icon: Wallet },
-  { to: '/student/chat', labelKey: 'nav.chat', icon: MessageSquare, soon: true },
+  { to: '/chat', labelKey: 'nav.chat', icon: MessageSquare },
 ];
 
 const PROF_NAV: NavItem[] = [
@@ -42,16 +43,17 @@ const PROF_NAV: NavItem[] = [
   { to: '/prof/pricing', labelKey: 'nav.pricing', icon: Tag },
   { to: '/prof/bookings', labelKey: 'nav.bookings', icon: ClipboardList },
   { to: '/prof/wallet', labelKey: 'nav.wallet', icon: Wallet },
-  { to: '/prof/chat', labelKey: 'nav.chat', icon: MessageSquare, soon: true },
+  { to: '/chat', labelKey: 'nav.chat', icon: MessageSquare },
 ];
 
 const ADMIN_NAV: NavItem[] = [
   { to: '/admin', labelKey: 'nav.dashboard', icon: LayoutDashboard },
-  { to: '/admin/validations', labelKey: 'nav.validations', icon: ClipboardCheck, soon: true },
-  { to: '/admin/topups', labelKey: 'nav.topups', icon: Coins, soon: true },
-  { to: '/admin/payouts', labelKey: 'nav.payouts', icon: CreditCard, soon: true },
-  { to: '/admin/disputes', labelKey: 'nav.disputes', icon: Gavel, soon: true },
-  { to: '/admin/audit', labelKey: 'nav.audit', icon: ScrollText, soon: true },
+  { to: '/admin/validations', labelKey: 'nav.validations', icon: ClipboardCheck },
+  { to: '/admin/topups', labelKey: 'nav.topups', icon: Coins },
+  { to: '/admin/payouts', labelKey: 'nav.payouts', icon: CreditCard },
+  { to: '/admin/disputes', labelKey: 'nav.disputes', icon: Gavel },
+  { to: '/admin/audit', labelKey: 'nav.audit', icon: ScrollText },
+  { to: '/admin/balance-adjust', labelKey: 'nav.balance_adjust', icon: ShieldAlert },
 ];
 
 function navFor(role: Role | null | undefined): NavItem[] {

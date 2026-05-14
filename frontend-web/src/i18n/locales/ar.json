@@ -88,6 +88,7 @@
     "payouts": "التحويلات",
     "disputes": "النزاعات",
     "audit": "السجلات",
+    "balance_adjust": "تعديل الرصيد",
     "admin_section": "الإدارة"
   },
   "auth": {
@@ -478,6 +479,236 @@
         "REJECTED": "مرفوض"
       },
       "success": "تم إرسال الطلب."
+    }
+  },
+  "chat": {
+    "title": "الرسائل",
+    "detail_title": "محادثة",
+    "thread_title": "سلسلة الرسائل",
+    "empty": "لا توجد محادثات بعد.",
+    "no_messages": "لا توجد رسائل. ابدأ المحادثة.",
+    "send": "إرسال",
+    "compose_placeholder": "اكتب رسالتك…",
+    "typing": "{{name}} يكتب…",
+    "unread_count": "{{count}} رسالة غير مقروءة",
+    "closed_notice": "تم إغلاق هذه المحادثة. لا يمكنك إرسال رسائل جديدة.",
+    "info": {
+      "title": "تفاصيل",
+      "booking_link": "عرض الحجز"
+    },
+    "status": {
+      "PRE_ACCEPT": "قبل القبول",
+      "POST_ACCEPT": "مقبولة",
+      "CLOSED": "مغلقة"
+    },
+    "presence": {
+      "online": "متصل",
+      "offline": "غير متصل"
+    },
+    "message": {
+      "moderation_hint": "تمت مراجعة الرسالة آلياً",
+      "no_body": "رسالة فارغة"
+    }
+  },
+  "video": {
+    "lobby": {
+      "title": "تجهيز الحصة",
+      "session_info": "معلومات الحصة",
+      "join_now": "الانضمام إلى الحصة",
+      "privacy_notice": "لن يتم تسجيل الحصة إلا بموافقة الطرفين."
+    },
+    "device_check": {
+      "title": "اختبار الكاميرا والميكروفون",
+      "preview_alt": "معاينة الكاميرا",
+      "mic_level": "مستوى الميكروفون",
+      "error": "تعذّر الوصول إلى الكاميرا أو الميكروفون. تحقق من أذونات المتصفح."
+    },
+    "room": {
+      "title": "حصة جارية",
+      "grid_title": "مكالمة فيديو",
+      "connecting": "جارٍ الاتصال بغرفة الفيديو…",
+      "no_participants": "في انتظار المشارك الآخر…"
+    },
+    "side_panel": {
+      "title": "أدوات",
+      "whiteboard": "السبورة",
+      "quiz": "اختبار",
+      "notes": "ملاحظات",
+      "whiteboard_placeholder": "السبورة التشاركية ستتوفر لاحقاً. يمكنك حفظ لقطة فارغة للتجربة.",
+      "quiz_placeholder": "محرر الاختبارات يتوفر في الإصدار الثاني. يمكنك إنشاء عنصر فارغ للتجربة.",
+      "notes_placeholder": "ملاحظات حرة لهذه الحصة…",
+      "snapshot": "حفظ لقطة",
+      "add_quiz": "إنشاء اختبار فارغ"
+    },
+    "consent": {
+      "banner": "يتطلب التسجيل موافقة الطرفين.",
+      "grant": "أمنح موافقتي"
+    },
+    "controls": {
+      "mic_on": "تشغيل الميكروفون",
+      "mic_off": "كتم الميكروفون",
+      "camera_on": "تشغيل الكاميرا",
+      "camera_off": "إيقاف الكاميرا",
+      "screen_share": "مشاركة الشاشة",
+      "leave": "مغادرة"
+    },
+    "field": {
+      "scheduled": "موعد",
+      "status": "الحالة"
+    },
+    "status": {
+      "SCHEDULED": "مجدولة",
+      "LIVE": "مباشر",
+      "ENDED": "منتهية",
+      "FAILED": "فشل",
+      "EXPIRED": "منقضية"
+    },
+    "errors": {
+      "connect_failed": "خادم LiveKit غير متاح (وضع التطوير — تم إصدار JWT بدون خادم)."
+    }
+  },
+  "admin": {
+    "validations": {
+      "title": "المصادقة على الأساتذة",
+      "empty": "لا يوجد أساتذة في انتظار المصادقة.",
+      "detail_title": "ملف الأستاذ",
+      "columns": {
+        "submitted": "تاريخ الإرسال",
+        "prof": "الأستاذ",
+        "diplomas": "الشهادات",
+        "score": "نقاط الذكاء الاصطناعي"
+      },
+      "validate": "مصادقة",
+      "reject": "رفض",
+      "request_interview": "طلب مقابلة",
+      "diplomas": "الشهادات",
+      "ai_score": "نقاط الذكاء الاصطناعي",
+      "notes": "ملاحظات",
+      "reject_dialog": {
+        "title": "رفض هذا الأستاذ؟",
+        "desc": "حدد سبب الرفض. سيتم إعلام الأستاذ.",
+        "placeholder": "سبب الرفض…"
+      }
+    },
+    "topups": {
+      "title": "التعبئات في الانتظار",
+      "empty": "لا توجد تعبئات للمعالجة.",
+      "columns": {
+        "submitted": "تاريخ الإرسال",
+        "student": "الطالب",
+        "method": "الطريقة",
+        "amount": "المبلغ المطلوب",
+        "proof": "الإثبات"
+      },
+      "actions": {
+        "approve": "موافقة",
+        "modify": "تعديل",
+        "reject": "رفض"
+      },
+      "dialog": {
+        "APPROVE": "الموافقة على التعبئة",
+        "MODIFY": "تعديل المبلغ المعتمد",
+        "REJECT": "رفض التعبئة",
+        "approved_amount": "المبلغ المعتمد (درهم)",
+        "notes": "ملاحظات (اختياري)"
+      }
+    },
+    "payouts": {
+      "title": "التحويلات",
+      "empty": "لا توجد تحويلات لهذا الفلتر.",
+      "columns": {
+        "requested": "تاريخ الطلب",
+        "prof": "الأستاذ",
+        "amount": "المبلغ",
+        "iban": "RIB / IBAN"
+      },
+      "actions": {
+        "approve": "موافقة",
+        "reject": "رفض",
+        "mark_paid": "تعليم كمدفوع"
+      },
+      "dialog": {
+        "APPROVE": "الموافقة على التحويل",
+        "REJECT": "رفض التحويل",
+        "mark_paid": "تعليم كمدفوع",
+        "payment_ref": "مرجع الدفع",
+        "payment_ref_placeholder": "مثال: VIR-2024-09-01-XYZ",
+        "notes": "ملاحظات (اختياري)"
+      },
+      "errors": {
+        "payment_ref_required": "مرجع الدفع إلزامي."
+      }
+    },
+    "disputes": {
+      "title": "النزاعات المفتوحة",
+      "empty": "لا توجد نزاعات مفتوحة.",
+      "resolve": "حل",
+      "columns": {
+        "booking": "الحجز",
+        "when": "متى",
+        "subject": "المادة",
+        "amount": "المبلغ"
+      },
+      "dialog": {
+        "title": "حل النزاع",
+        "decision": "القرار",
+        "dispute_id": "معرف النزاع",
+        "dispute_id_hint": "معرف النزاع متوفر في صفحة تفاصيل الحجز.",
+        "prof_share": "حصة الأستاذ (درهم)",
+        "student_refund": "تعويض الطالب (درهم)",
+        "notes": "ملاحظات"
+      },
+      "decision": {
+        "REFUND": "تعويض الطالب",
+        "PAY_PROF": "دفع للأستاذ",
+        "SPLIT": "تقسيم"
+      },
+      "errors": {
+        "invalid_decision": "قرار غير صالح.",
+        "dispute_id_required": "معرف النزاع إلزامي.",
+        "prof_share_required": "يجب أن تكون حصة الأستاذ مبلغاً موجباً.",
+        "student_refund_required": "يجب أن يكون تعويض الطالب مبلغاً موجباً."
+      }
+    },
+    "audit": {
+      "title": "سجل التدقيق",
+      "intro": "أدخل معرف المستخدم لعرض عملياته.",
+      "empty": "لا توجد عمليات لهذا الفلتر.",
+      "export_csv": "تصدير CSV",
+      "filter": {
+        "user_id": "معرف المستخدم",
+        "from": "من",
+        "to": "إلى"
+      },
+      "columns": {
+        "when": "متى",
+        "operation": "العملية",
+        "amount": "المبلغ",
+        "balance": "الرصيد",
+        "reference": "المرجع",
+        "reason": "السبب"
+      },
+      "errors": {
+        "user_id_required": "أدخل معرف المستخدم أولاً."
+      }
+    },
+    "balance_adjust": {
+      "title": "تعديل الرصيد اليدوي",
+      "short_title": "تعديل رصيد",
+      "form_title": "أدخل التعديل",
+      "warning_banner": "ستُسجَّل هذه العملية في سجل التدقيق غير القابل للتعديل.",
+      "user_id": "معرف المستخدم",
+      "delta_mad": "التغيير (درهم)",
+      "delta_hint": "استخدم عدداً موجباً للائتمان، وسالباً للخصم.",
+      "operation": "نوع العملية",
+      "reason": "السبب (إلزامي)",
+      "confirm_title": "تأكيد التعديل؟",
+      "success": "تم تسجيل التعديل.",
+      "errors": {
+        "user_required": "أدخل معرف المستخدم.",
+        "amount_required": "يجب أن يكون التغيير مختلفاً عن الصفر.",
+        "reason_required": "السبب إلزامي."
+      }
     }
   }
 }
