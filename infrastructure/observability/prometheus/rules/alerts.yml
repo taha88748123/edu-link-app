@@ -1,0 +1,89 @@
+# NAJA7I core alerting rules.
+#
+# These rules are intentionally conservative — they catch the most damaging
+# failure modes for the platform's money-of-record service (escrow stuck),
+# event pipeline (Kafka lag), and runtime health (service down, error spikes,
+# JVM pressure).
+#
+# All thresholds are tuned for dev. Re-tune for prod via the config-server
+# delivery channel (no rebuild required).
+
+groups:
+  - name: naja7i-payment
+    interval: 30s
+    rules:
+      # TODO: payment-service does not yet expose `naja7i_payment_escrow_*`
+      # Micrometer counters. Until @Counter increments are wired around
+      # PaymentService.lockEscrow / releaseEscrow, this alert evaluates to
+      # absent() and never fires. Swap with the real counter names once they
+      # exist (see backend/payment-service/.../EscrowService.java).
+      - alert: EscrowStuck
+        expr: |
+          (sum by (service) (naja7i_payment_escrow_locked_total)
+            - sum by (service) (naja7i_payment_escrow_released_total)) > 50
+        for: 1h
+        labels:
+          severity: critical
+          team: payments
+        annotations:
+          summary: "Escrow funds stuck above threshold (>50 transactions, >1h)"
+          description: |
+            Locked escrow records minus released escrow records exceeds 50 for
+            more than one hour. Investigate payment-service logs for failed
+            release attempts.
+
+  - name: naja7i-kafka
+    interval: 30s
+    rules:
+      - alert: KafkaConsumerLag
+        expr: kafka_consumer_records_lag_max > 1000
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Kafka consumer lag is high ({{ $labels.client_id }})"
+          description: |
+            Consumer {{ $labels.client_id }} on topic
+            {{ $labels.topic }} has lagged by more than 1000 records for >5m.
+
+  - name: naja7i-runtime
+    interval: 30s
+    rules:
+      - alert: ServiceDown
+        expr: up{job=~"naja7i-.*"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "Service {{ $labels.service }} is down"
+          description: |
+            Prometheus has been unable to scrape {{ $labels.service }} for
+            more than two minutes.
+
+      - alert: HighErrorRate
+        expr: |
+          sum by (service) (rate(http_server_requests_seconds_count{status=~"5.."}[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "{{ $labels.service }} HTTP 5xx rate > 0.5 req/s"
+          description: |
+            Sustained 5xx error rate on {{ $labels.service }} above 0.5
+            requests/sec for 5 minutes. Check service logs.
+
+      - alert: JVMHeapPressure
+        expr: |
+          jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"} > 0.85
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "{{ $labels.service }} JVM heap >85% for 10m"
+          description: |
+            {{ $labels.service }} heap usage above 85% for ten minutes.
+            Investigate for memory leaks or GC pressure.

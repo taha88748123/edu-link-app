@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  NAJA7I shared logback configuration.
+
+  Include from each service:
+      <configuration>
+        <include resource="logback-spring-naja7i.xml"/>
+      </configuration>
+
+  Profiles
+  ========
+  - default (no docker profile):
+      Human-readable single-line console output, useful for local dev.
+  - docker:
+      Structured JSON output via LogstashEncoder. Promtail tails the container
+      stdout and ships these lines into Loki. Service name, traceId, spanId and
+      requestId / userId from MDC are first-class fields.
+
+  Important
+  =========
+  Secrets (API keys, JWT secrets, DB passwords) MUST NEVER be placed in MDC —
+  the encoder will surface every MDC value as a top-level JSON field.
+-->
+<included>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+  <springProperty scope="context" name="appName" source="spring.application.name" defaultValue="naja7i-service"/>
+
+  <!-- ====== JSON appender (used when the `docker` Spring profile is active) ====== -->
+  <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <customFields>{"service":"${appName}","stack":"naja7i"}</customFields>
+      <includeMdcKeyName>traceId</includeMdcKeyName>
+      <includeMdcKeyName>spanId</includeMdcKeyName>
+      <includeMdcKeyName>userId</includeMdcKeyName>
+      <includeMdcKeyName>requestId</includeMdcKeyName>
+    </encoder>
+  </appender>
+
+  <!-- ====== Local-dev human appender ====== -->
+  <appender name="HUMAN" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} %-5level [%X{traceId:-}] %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <springProfile name="docker">
+    <root level="INFO">
+      <appender-ref ref="JSON_CONSOLE"/>
+    </root>
+  </springProfile>
+
+  <springProfile name="!docker">
+    <root level="INFO">
+      <appender-ref ref="HUMAN"/>
+    </root>
+  </springProfile>
+</included>

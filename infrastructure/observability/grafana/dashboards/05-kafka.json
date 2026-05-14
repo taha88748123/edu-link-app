@@ -1,0 +1,100 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "uid": "naja7i-kafka",
+  "title": "NAJA7I — Kafka pipeline",
+  "tags": ["naja7i", "kafka"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "templating": { "list": [] },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Consumer lag (max) per group",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "naja7i-prometheus" },
+      "targets": [
+        {
+          "expr": "max by (client_id) (kafka_consumer_records_lag_max)",
+          "refId": "A",
+          "legendFormat": "{{client_id}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Consumer record consumption rate (/s)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "naja7i-prometheus" },
+      "targets": [
+        {
+          "expr": "sum by (client_id, topic) (rate(kafka_consumer_records_consumed_total[5m]))",
+          "refId": "A",
+          "legendFormat": "{{client_id}} / {{topic}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Producer record send rate per topic (/s)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "naja7i-prometheus" },
+      "targets": [
+        {
+          "expr": "sum by (topic) (rate(kafka_producer_record_send_total[5m]))",
+          "refId": "A",
+          "legendFormat": "{{topic}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Producer errors (/s) — proxy for dead-letter rate",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "naja7i-prometheus" },
+      "targets": [
+        {
+          "expr": "sum by (client_id) (rate(kafka_producer_record_error_total[5m]))",
+          "refId": "A",
+          "legendFormat": "{{client_id}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Total partitions assigned",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "naja7i-prometheus" },
+      "targets": [
+        { "expr": "sum(kafka_consumer_assigned_partitions)", "refId": "A" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Active producers",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "naja7i-prometheus" },
+      "targets": [
+        { "expr": "count(count by (client_id) (kafka_producer_record_send_total))", "refId": "A" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] }
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 SHELL := /usr/bin/env bash
 COMPOSE := docker compose
 
-.PHONY: help infra-up infra-down platform-up platform-down services-up services-down frontend-up frontend-down frontend-dev frontend-build up down logs ps build-shared build-platform build-services test clean
+.PHONY: help infra-up infra-down platform-up platform-down services-up services-down frontend-up frontend-down frontend-dev frontend-build observability-up observability-down obs-logs up down logs ps build-shared build-platform build-services test clean
 
 help:
 	@echo "NAJA7I-APP — make targets"
@@ -16,7 +16,10 @@ help:
 	@echo "  frontend-down   Stop frontend container"
 	@echo "  frontend-dev    Run frontend Vite dev server locally (port 5173)"
 	@echo "  frontend-build  Production build of the frontend"
-	@echo "  up              Start everything (infra + platform + services + frontend)"
+	@echo "  observability-up   Start LGTM stack (Prometheus, Loki, Tempo, Grafana, Promtail)"
+	@echo "  observability-down Stop the LGTM stack"
+	@echo "  obs-logs           Tail observability stack logs"
+	@echo "  up              Start everything (infra + platform + services + frontend + observability)"
 	@echo "  down            Stop everything"
 	@echo "  logs            Tail all logs"
 	@echo "  ps              List running containers"
@@ -56,11 +59,20 @@ frontend-dev:
 frontend-build:
 	cd frontend-web && npm install && npm run build
 
+observability-up:
+	$(COMPOSE) --profile observability up -d
+
+observability-down:
+	$(COMPOSE) --profile observability down
+
+obs-logs:
+	$(COMPOSE) logs -f --tail=100 prometheus loki tempo grafana promtail
+
 up:
-	$(COMPOSE) --profile infra --profile platform --profile services --profile frontend up -d --build
+	$(COMPOSE) --profile infra --profile platform --profile services --profile frontend --profile observability up -d --build
 
 down:
-	$(COMPOSE) --profile infra --profile platform --profile services --profile frontend down
+	$(COMPOSE) --profile infra --profile platform --profile services --profile frontend --profile observability down
 
 logs:
 	$(COMPOSE) logs -f --tail=100

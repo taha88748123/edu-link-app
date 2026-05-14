@@ -1,0 +1,92 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "uid": "naja7i-gateway",
+  "title": "NAJA7I — API Gateway",
+  "tags": ["naja7i", "gateway"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "templating": { "list": [] },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Request rate by route (req/s)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "naja7i-prometheus" },
+      "targets": [
+        {
+          "expr": "sum by (routeId) (rate(spring_cloud_gateway_requests_seconds_count[5m]))",
+          "refId": "A",
+          "legendFormat": "{{routeId}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "p99 latency by route (s)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "naja7i-prometheus" },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum by (le, routeId) (rate(spring_cloud_gateway_requests_seconds_bucket[5m])))",
+          "refId": "A",
+          "legendFormat": "{{routeId}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Gateway status breakdown",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "naja7i-prometheus" },
+      "targets": [
+        {
+          "expr": "sum by (outcome) (rate(spring_cloud_gateway_requests_seconds_count[5m]))",
+          "refId": "A",
+          "legendFormat": "{{outcome}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "JWT validation failures (401)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "naja7i-prometheus" },
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count{service=\"api-gateway\", status=\"401\"}[5m]))",
+          "refId": "A",
+          "legendFormat": "401/s"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] }
+    },
+    {
+      "id": 5,
+      "type": "logs",
+      "title": "Gateway WARN / ERROR",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 16 },
+      "datasource": { "type": "loki", "uid": "naja7i-loki" },
+      "targets": [
+        {
+          "expr": "{service_name=\"api-gateway\", level=~\"WARN|ERROR\"}",
+          "refId": "A"
+        }
+      ],
+      "options": { "showTime": true, "wrapLogMessage": true, "sortOrder": "Descending" }
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "uid": "naja7i-payment",
+  "title": "NAJA7I — Payment (money-critical)",
+  "tags": ["naja7i", "payment", "money"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "templating": { "list": [] },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Escrow locked / released (cumulative)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "naja7i-prometheus" },
+      "description": "TODO: counters not yet exposed by payment-service — wire @Counter around lockEscrow / releaseEscrow.",
+      "targets": [
+        { "expr": "naja7i_payment_escrow_locked_total",  "refId": "A", "legendFormat": "locked" },
+        { "expr": "naja7i_payment_escrow_released_total", "refId": "B", "legendFormat": "released" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Escrow stuck (locked - released)",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "naja7i-prometheus" },
+      "targets": [
+        {
+          "expr": "(naja7i_payment_escrow_locked_total or vector(0)) - (naja7i_payment_escrow_released_total or vector(0))",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green",  "value": null },
+              { "color": "orange", "value": 10 },
+              { "color": "red",    "value": 50 }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Balance adjustments rate (/s)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "naja7i-prometheus" },
+      "targets": [
+        {
+          "expr": "rate(http_server_requests_seconds_count{service=\"payment-service\", uri=~\".*balance.*\"}[5m])",
+          "refId": "A",
+          "legendFormat": "{{uri}} {{method}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "INSUFFICIENT_BALANCE error rate (/s)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "naja7i-prometheus" },
+      "targets": [
+        {
+          "expr": "rate(http_server_requests_seconds_count{service=\"payment-service\", status=\"402\"}[5m])",
+          "refId": "A",
+          "legendFormat": "402"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] }
+    },
+    {
+      "id": 5,
+      "type": "logs",
+      "title": "Payment ERROR / WARN logs",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 16 },
+      "datasource": { "type": "loki", "uid": "naja7i-loki" },
+      "targets": [
+        {
+          "expr": "{service_name=\"payment-service\", level=~\"ERROR|WARN\"}",
+          "refId": "A"
+        }
+      ],
+      "options": { "showTime": true, "wrapLogMessage": true, "sortOrder": "Descending" }
+    }
+  ]
+}

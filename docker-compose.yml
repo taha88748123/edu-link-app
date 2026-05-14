@@ -1,10 +1,15 @@
 # docker-compose.yml — NAJA7I-APP local dev
-# Profiles : infra (deps) · platform (config/eureka/gateway) · services (microservices métier, à venir)
+# Profiles : infra (deps) · platform (config/eureka/gateway) · services (microservices métier) ·
+#            frontend (Vite web) · observability (Prometheus / Loki / Tempo / Grafana / Promtail)
 
 name: naja7i
 
 x-common-env: &common-env
   TZ: Africa/Casablanca
+  # Default OTLP endpoint — points at Tempo when the `observability` profile
+  # is up; if it isn't running the exporter retries silently and the app keeps
+  # working. Override per-service if needed.
+  OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://tempo:4318/v1/traces}
 
 services:
   # ---------------------------------------------------------------- INFRA
@@ -472,6 +477,71 @@ services:
       timeout: 5s
       retries: 15
 
+  # ---------------------------------------------------------------- OBSERVABILITY (LGTM)
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    profiles: [observability]
+    ports: ["9090:9090"]
+    environment: { <<: *common-env }
+    volumes:
+      - ./infrastructure/observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infrastructure/observability/prometheus/rules:/etc/prometheus/rules:ro
+      - promdata:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=30d'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+
+  loki:
+    image: grafana/loki:3.2.0
+    profiles: [observability]
+    ports: ["3100:3100"]
+    environment: { <<: *common-env }
+    volumes:
+      - ./infrastructure/observability/loki/loki-config.yml:/etc/loki/config.yml:ro
+      - lokidata:/loki
+    command: -config.file=/etc/loki/config.yml
+
+  promtail:
+    image: grafana/promtail:3.2.0
+    profiles: [observability]
+    environment: { <<: *common-env }
+    volumes:
+      - ./infrastructure/observability/promtail/promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: -config.file=/etc/promtail/config.yml
+    depends_on: [loki]
+
+  tempo:
+    image: grafana/tempo:2.6.1
+    profiles: [observability]
+    ports:
+      - "3200:3200"   # Tempo HTTP API
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+    environment: { <<: *common-env }
+    volumes:
+      - ./infrastructure/observability/tempo/tempo-config.yml:/etc/tempo/config.yml:ro
+      - tempodata:/var/tempo
+    command: -config.file=/etc/tempo/config.yml
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    profiles: [observability]
+    ports: ["3000:3000"]
+    volumes:
+      - ./infrastructure/observability/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - ./infrastructure/observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infrastructure/observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafanadata:/var/lib/grafana
+    depends_on: [prometheus, loki, tempo]
+    environment:
+      <<: *common-env
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_INSTALL_PLUGINS: ""
+
   # ---------------------------------------------------------------- FRONTEND (Phase 4)
   frontend-web:
     build:
@@ -495,6 +565,10 @@ volumes:
   mongodata:
   redisdata:
   miniodata:
+  promdata:
+  lokidata:
+  tempodata:
+  grafanadata:
 
 networks:
   default:

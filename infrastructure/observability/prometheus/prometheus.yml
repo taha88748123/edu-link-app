@@ -1,0 +1,97 @@
+# Prometheus scrape config for the NAJA7I observability stack.
+#
+# - All 13 microservices expose /actuator/prometheus on their service port.
+# - Static targets are used in v1 (no Eureka SD). Hostnames resolve via the
+#   docker-compose default network.
+# - Alerting rules live in /etc/prometheus/rules/*.yml (mounted read-only).
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    stack: 'naja7i'
+    env: 'dev'
+
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
+scrape_configs:
+  # ---------- Platform ----------
+  - job_name: 'naja7i-config-server'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['config-server:8888']
+        labels: { service: 'config-server' }
+
+  - job_name: 'naja7i-service-discovery'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['service-discovery:8761']
+        labels: { service: 'service-discovery' }
+
+  - job_name: 'naja7i-api-gateway'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['api-gateway:8080']
+        labels: { service: 'api-gateway' }
+
+  # ---------- Business services ----------
+  - job_name: 'naja7i-auth-service'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['auth-service:8101']
+        labels: { service: 'auth-service' }
+
+  - job_name: 'naja7i-user-profile-service'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['user-profile-service:8102']
+        labels: { service: 'user-profile-service' }
+
+  - job_name: 'naja7i-calendar-service'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['calendar-service:8103']
+        labels: { service: 'calendar-service' }
+
+  - job_name: 'naja7i-pricing-service'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['pricing-service:8104']
+        labels: { service: 'pricing-service' }
+
+  - job_name: 'naja7i-booking-service'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['booking-service:8105']
+        labels: { service: 'booking-service' }
+
+  - job_name: 'naja7i-payment-service'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['payment-service:8106']
+        labels: { service: 'payment-service' }
+
+  - job_name: 'naja7i-chat-service'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['chat-service:8107']
+        labels: { service: 'chat-service' }
+
+  - job_name: 'naja7i-video-session-service'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['video-session-service:8108']
+        labels: { service: 'video-session-service' }
+
+  - job_name: 'naja7i-ai-agent-service'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['ai-agent-service:8109']
+        labels: { service: 'ai-agent-service' }
+
+  - job_name: 'naja7i-notification-service'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['notification-service:8111']
+        labels: { service: 'notification-service' }

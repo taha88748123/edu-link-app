@@ -1,0 +1,55 @@
+# Datasource provisioning — Prometheus, Loki, Tempo.
+#
+# Grafana reads this file on startup and creates / updates the three datasources
+# below. All three are within the same docker-compose network as Grafana.
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    uid: naja7i-prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    jsonData:
+      httpMethod: POST
+      timeInterval: 15s
+      exemplarTraceIdDestinations:
+        - name: traceID
+          datasourceUid: naja7i-tempo
+
+  - name: Loki
+    uid: naja7i-loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    editable: true
+    jsonData:
+      maxLines: 2000
+      derivedFields:
+        - name: TraceID
+          matcherRegex: '"traceId"\s*:\s*"([0-9a-f]+)"'
+          url: '$${__value.raw}'
+          datasourceUid: naja7i-tempo
+
+  - name: Tempo
+    uid: naja7i-tempo
+    type: tempo
+    access: proxy
+    url: http://tempo:3200
+    editable: true
+    jsonData:
+      tracesToLogsV2:
+        datasourceUid: naja7i-loki
+        spanStartTimeShift: '-1h'
+        spanEndTimeShift: '1h'
+        tags: [{ key: 'service.name', value: 'service_name' }]
+        filterByTraceID: true
+        filterBySpanID: false
+      tracesToMetrics:
+        datasourceUid: naja7i-prometheus
+      serviceMap:
+        datasourceUid: naja7i-prometheus
+      nodeGraph:
+        enabled: true

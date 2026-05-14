@@ -29,6 +29,11 @@
     <mapstruct.version>1.6.2</mapstruct.version>
     <jjwt.version>0.12.6</jjwt.version>
     <testcontainers.version>1.20.3</testcontainers.version>
+
+    <!-- Observability (LGTM stack) — see infrastructure/observability/.
+         opentelemetry-* versions come from Spring Boot's opentelemetry-bom (managed
+         by spring-boot-dependencies 3.3.4 → 1.40.0). -->
+    <logstash.encoder.version>7.4</logstash.encoder.version>
   </properties>
 
   <modules>
@@ -83,6 +88,21 @@
         <groupId>ma.naja7i</groupId>
         <artifactId>shared-i18n</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ma.naja7i</groupId>
+        <artifactId>shared-observability</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- Observability: JSON log encoder (pinned).
+           Both `micrometer-tracing-bridge-otel` and `opentelemetry-exporter-otlp`
+           are version-managed by the Spring Boot BOM imported above (the BOM
+           pulls in `opentelemetry-bom` → 1.40.0). -->
+      <dependency>
+        <groupId>net.logstash.logback</groupId>
+        <artifactId>logstash-logback-encoder</artifactId>
+        <version>${logstash.encoder.version}</version>
       </dependency>
 
       <!-- JWT -->

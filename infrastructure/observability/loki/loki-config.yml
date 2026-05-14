@@ -1,0 +1,64 @@
+# Loki single-binary configuration for the NAJA7I observability stack.
+#
+# - Filesystem storage under /loki/.
+# - 30-day retention via the compactor's retention pipeline.
+# - Listens on :3100. Promtail pushes /loki/api/v1/push.
+# - No auth in dev (the auth header is enabled by default in Loki 3.x but we
+#   disable it here for simplicity; re-enable for prod).
+
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+  grpc_listen_port: 9096
+  log_level: info
+
+common:
+  instance_addr: 127.0.0.1
+  path_prefix: /loki
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+
+schema_config:
+  configs:
+    - from: 2024-01-01
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+limits_config:
+  retention_period: 720h            # 30 days
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h
+  max_query_series: 1000
+
+compactor:
+  working_directory: /loki/compactor
+  compaction_interval: 10m
+  retention_enabled: true
+  retention_delete_delay: 2h
+  retention_delete_worker_count: 150
+  delete_request_store: filesystem
+
+ruler:
+  storage:
+    type: local
+    local:
+      directory: /loki/rules
+  rule_path: /loki/rules-tmp
+  ring:
+    kvstore:
+      store: inmemory
+  enable_api: true
+
+analytics:
+  reporting_enabled: false

@@ -1,0 +1,53 @@
+# Promtail config — ships docker container JSON-file logs into Loki.
+#
+# The default docker logging driver writes JSON files under
+# /var/lib/docker/containers/<id>/<id>-json.log. We tail every file in that
+# tree and use the docker-socket service-discovery to enrich each log entry
+# with the container's `com.docker.compose.service` label (which is the
+# service name from docker-compose.yml).
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+  log_level: info
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+        filters:
+          - name: label
+            values: ["com.docker.compose.project=naja7i"]
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: container
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
+        target_label: service
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_project']
+        target_label: stack
+      # Loki recommends keeping the cardinality low; we drop the container id.
+      - action: replace
+        target_label: job
+        replacement: docker
+    pipeline_stages:
+      # The docker logging driver wraps each log line in JSON: {"log":"...","stream":"stdout","time":"..."}
+      - docker: {}
+      # Spring services emit JSON via LogstashEncoder; parse it so traceId, level
+      # etc. become first-class labels (but capped — Loki cardinality matters).
+      - json:
+          expressions:
+            level: level
+            logger: logger_name
+            traceId: traceId
+            service_name: service
+      - labels:
+          level:
+          service_name:

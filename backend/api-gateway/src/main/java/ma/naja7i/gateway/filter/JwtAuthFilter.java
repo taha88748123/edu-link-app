@@ -52,6 +52,12 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         String traceId = req.getHeaders().getFirst(JwtClaims.HEADER_TRACE_ID);
         if (traceId == null) traceId = UUID.randomUUID().toString();
 
+        // NOTE: W3C `traceparent` / `tracestate` headers are forwarded automatically
+        // by Spring Cloud Gateway via WebClient when Micrometer tracing is on the
+        // classpath. The `X-Trace-Id` header below remains the existing
+        // request-id used by GlobalExceptionHandler. TODO: align both ids so that
+        // X-Trace-Id == the W3C trace-id once Micrometer's observation is bound
+        // to the reactive context for outbound calls.
         if (PublicPaths.isPublic(path)) {
             return chain.filter(exchange.mutate().request(req.mutate()
                     .header(JwtClaims.HEADER_TRACE_ID, traceId)

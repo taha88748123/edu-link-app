@@ -20,6 +20,7 @@
     <module>shared-errors</module>
     <module>shared-security</module>
     <module>shared-i18n</module>
+    <module>shared-observability</module>
   </modules>
 
   <build>

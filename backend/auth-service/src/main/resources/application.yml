@@ -62,6 +62,18 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+  # ------------------------------------------------------------------
+  # Distributed tracing — sampling 100% in dev. Reduce probability in prod.
+  # OTLP endpoint defaults to localhost; docker-compose sets it to Tempo.
+  # ------------------------------------------------------------------
+  tracing:
+    sampling:
+      probability: 1.0
+    propagation:
+      type: b3,w3c
+  otlp:
+    tracing:
+      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318/v1/traces}
 
 springdoc:
   api-docs:
