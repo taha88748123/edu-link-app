@@ -111,6 +111,7 @@ export default function RegisterPage() {
                       placeholder="+212XXXXXXXXX"
                       autoComplete="tel"
                       inputMode="tel"
+                      data-testid="register-phone"
                       {...field}
                     />
                   </FormControl>
@@ -127,7 +128,13 @@ export default function RegisterPage() {
                 <FormItem>
                   <FormLabel>{t('auth.register.email')}</FormLabel>
                   <FormControl>
-                    <Input type="email" autoComplete="email" {...field} value={field.value ?? ''} />
+                    <Input
+                      type="email"
+                      autoComplete="email"
+                      data-testid="register-email"
+                      {...field}
+                      value={field.value ?? ''}
+                    />
                   </FormControl>
                   <FormMessage>{translateMessage(fieldState.error?.message)}</FormMessage>
                 </FormItem>
@@ -141,7 +148,12 @@ export default function RegisterPage() {
                 <FormItem>
                   <FormLabel>{t('auth.register.password')}</FormLabel>
                   <FormControl>
-                    <Input type="password" autoComplete="new-password" {...field} />
+                    <Input
+                      type="password"
+                      autoComplete="new-password"
+                      data-testid="register-password"
+                      {...field}
+                    />
                   </FormControl>
                   <div className="flex h-1.5 gap-1">
                     {[0, 1, 2, 3].map((i) => (
@@ -184,7 +196,7 @@ export default function RegisterPage() {
                   <FormLabel>{t('auth.register.role')}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger data-testid="register-role-select">
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
@@ -234,7 +246,12 @@ export default function RegisterPage() {
               </Alert>
             ) : null}
 
-            <Button type="submit" className="w-full" disabled={registerMut.isPending}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={registerMut.isPending}
+              data-testid="register-submit"
+            >
               {registerMut.isPending ? t('common.loading') : t('auth.register.submit')}
             </Button>
 

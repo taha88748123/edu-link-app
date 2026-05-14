@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 export function AntiBypassNotice({ className }: { className?: string }) {
   const { t } = useTranslation();
   return (
-    <Alert className={className}>
+    <Alert className={className} data-testid="chat-bypass-notice">
       <ShieldAlert className="h-4 w-4" />
       <AlertDescription>{t('booking.anti_bypass')}</AlertDescription>
     </Alert>

@@ -113,6 +113,7 @@ export default function VerifyOtpPage() {
                 autoComplete="one-time-code"
                 maxLength={1}
                 aria-label={`${t('auth.otp.code')} ${i + 1}`}
+                data-testid={`otp-digit-${i}`}
                 className="h-12 w-10 rounded-md border border-input bg-background text-center text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-ring"
               />
             ))}
@@ -124,7 +125,12 @@ export default function VerifyOtpPage() {
             </Alert>
           ) : null}
 
-          <Button type="submit" className="w-full" disabled={!complete || verifyOtp.isPending}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={!complete || verifyOtp.isPending}
+            data-testid="otp-submit"
+          >
             {verifyOtp.isPending ? t('common.loading') : t('auth.otp.submit')}
           </Button>
 
@@ -135,7 +141,7 @@ export default function VerifyOtpPage() {
                 value={channel}
                 onValueChange={(v) => setChannel(v as OtpChannel)}
               >
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-40" data-testid="otp-channel">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -148,6 +154,7 @@ export default function VerifyOtpPage() {
                 variant="outline"
                 onClick={onResend}
                 disabled={secondsLeft > 0 || resendOtp.isPending}
+                data-testid="otp-resend"
               >
                 {secondsLeft > 0
                   ? t('auth.otp.resend_in', { seconds: secondsLeft })

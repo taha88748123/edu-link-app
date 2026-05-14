@@ -47,7 +47,12 @@ public class SecurityConfig {
                                 "/api/v1/auth/resend-otp",
                                 "/api/v1/auth/refresh",
                                 "/api/v1/auth/password/reset-request",
-                                "/api/v1/auth/password/reset"
+                                "/api/v1/auth/password/reset",
+                                // DEV-ONLY: bean only exists when
+                                // naja7i.auth.dev.test-mode=true; permitting
+                                // the path here is safe because the handler
+                                // is otherwise absent. See TestSupportController.
+                                "/api/v1/dev/auth/**"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(headerAuthFilter, UsernamePasswordAuthenticationFilter.class)

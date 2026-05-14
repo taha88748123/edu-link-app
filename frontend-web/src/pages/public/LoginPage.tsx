@@ -67,7 +67,11 @@ export default function LoginPage() {
                 <FormItem>
                   <FormLabel>{t('auth.login.phone_or_email')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete="username" {...field} />
+                    <Input
+                      autoComplete="username"
+                      data-testid="login-phone-or-email"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage>{translateMessage(fieldState.error?.message)}</FormMessage>
                 </FormItem>
@@ -80,7 +84,12 @@ export default function LoginPage() {
                 <FormItem>
                   <FormLabel>{t('auth.login.password')}</FormLabel>
                   <FormControl>
-                    <Input type="password" autoComplete="current-password" {...field} />
+                    <Input
+                      type="password"
+                      autoComplete="current-password"
+                      data-testid="login-password"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage>{translateMessage(fieldState.error?.message)}</FormMessage>
                 </FormItem>
@@ -93,7 +102,12 @@ export default function LoginPage() {
               </Alert>
             ) : null}
 
-            <Button type="submit" className="w-full" disabled={login.isPending}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={login.isPending}
+              data-testid="login-submit"
+            >
               {login.isPending ? t('common.loading') : t('auth.login.submit')}
             </Button>
 

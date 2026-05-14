@@ -16,7 +16,16 @@ module.exports = {
     'plugin:react/jsx-runtime',
     'plugin:react-hooks/recommended',
   ],
-  ignorePatterns: ['dist', 'node_modules', '.eslintrc.cjs', 'vite.config.ts'],
+  ignorePatterns: [
+    'dist',
+    'node_modules',
+    '.eslintrc.cjs',
+    'vite.config.ts',
+    // Playwright e2e suite uses its own parserOptions / runtime — exclude
+    // from the unit-test/source lint pass.
+    'e2e/**',
+    'playwright.config.ts',
+  ],
   rules: {
     'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],

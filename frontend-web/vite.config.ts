@@ -30,5 +30,9 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     css: false,
+    // Exclude Playwright e2e suite from the Vitest run. Default exclude is
+    // {node_modules,dist,...}; we add `e2e/` so the parser doesn't try to
+    // load files that import @playwright/test.
+    exclude: ['**/node_modules/**', '**/dist/**', 'e2e/**'],
   },
 });

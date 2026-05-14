@@ -1,7 +1,7 @@
 SHELL := /usr/bin/env bash
 COMPOSE := docker compose
 
-.PHONY: help infra-up infra-down platform-up platform-down services-up services-down frontend-up frontend-down frontend-dev frontend-build observability-up observability-down obs-logs up down logs ps build-shared build-platform build-services test clean
+.PHONY: help infra-up infra-down platform-up platform-down services-up services-down frontend-up frontend-down frontend-dev frontend-build observability-up observability-down obs-logs up down logs ps build-shared build-platform build-services test clean e2e e2e-install
 
 help:
 	@echo "NAJA7I-APP — make targets"
@@ -27,6 +27,8 @@ help:
 	@echo "  build-platform  Build platform service images"
 	@echo "  build-services  Build Phase 1 service jars"
 	@echo "  test            Run all backend tests"
+	@echo "  e2e             Run Playwright e2e suite (assumes services + frontend already up)"
+	@echo "  e2e-install     Install Playwright browsers (chromium)"
 	@echo "  clean           Remove generated artefacts (NOT volumes)"
 
 infra-up:
@@ -91,6 +93,13 @@ build-services:
 
 test:
 	cd backend && mvn clean verify
+
+# Playwright e2e — assumes `make up` has been run with NAJA7I_AUTH_TEST_MODE=true.
+e2e:
+	cd frontend-web && npm run e2e
+
+e2e-install:
+	cd frontend-web && npm install && npm run e2e:install
 
 clean:
 	cd backend && mvn clean

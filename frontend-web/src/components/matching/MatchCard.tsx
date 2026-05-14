@@ -22,7 +22,11 @@ export function MatchCard({ match }: { match: MatchSuggestion }) {
   const scorePct = Math.round(match.score * 100);
 
   return (
-    <Card className="flex h-full flex-col">
+    <Card
+      className="flex h-full flex-col"
+      data-testid="discover-result-card"
+      data-prof-id={match.profId}
+    >
       <CardHeader className="flex flex-row items-center gap-3 space-y-0">
         <Avatar>
           <AvatarImage src={prof?.photoUrl ?? undefined} alt="" />

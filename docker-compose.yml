@@ -209,6 +209,9 @@ services:
       REDIS_PORT: "6379"
       KAFKA_BOOTSTRAP: kafka:29092
       NAJA7I_JWT_SECRET: ${NAJA7I_JWT_SECRET:-dev-only-secret-change-me-32+chars-required}
+      # E2E test-mode backdoor. NEVER set this true in production — see
+      # TestSupportController. Default false; CI overrides via env var.
+      NAJA7I_AUTH_TEST_MODE: ${NAJA7I_AUTH_TEST_MODE:-false}
     ports: ["8101:8101"]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8101/actuator/health"]

@@ -187,31 +187,56 @@ export default function BookingDetailPage() {
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
             {actions.includes('cancel') && (
-              <Button variant="destructive" onClick={() => setDialog('cancel')}>
+              <Button
+                variant="destructive"
+                onClick={() => setDialog('cancel')}
+                data-testid="booking-cancel-button"
+              >
                 {t('booking.actions.cancel')}
               </Button>
             )}
             {actions.includes('confirm') && (
-              <Button onClick={() => setDialog('confirm')}>{t('booking.actions.confirm')}</Button>
+              <Button
+                onClick={() => setDialog('confirm')}
+                data-testid="booking-confirm-button"
+              >
+                {t('booking.actions.confirm')}
+              </Button>
             )}
             {actions.includes('dispute') && (
-              <Button variant="outline" onClick={() => setDialog('dispute')}>
+              <Button
+                variant="outline"
+                onClick={() => setDialog('dispute')}
+                data-testid="booking-dispute-button"
+              >
                 {t('booking.actions.dispute')}
               </Button>
             )}
             {actions.includes('accept') && (
-              <Button onClick={runAccept} disabled={acceptMut.isPending}>
+              <Button
+                onClick={runAccept}
+                disabled={acceptMut.isPending}
+                data-testid="booking-accept-button"
+              >
                 {t('booking.actions.accept')}
               </Button>
             )}
             {actions.includes('decline') && (
-              <Button variant="destructive" onClick={() => setDialog('decline')}>
+              <Button
+                variant="destructive"
+                onClick={() => setDialog('decline')}
+                data-testid="booking-decline-button"
+              >
                 {t('booking.actions.decline')}
               </Button>
             )}
             {actions.includes('start') && (
               <div className="space-y-1">
-                <Button onClick={runStart} disabled={!startWindowOpen || startMut.isPending}>
+                <Button
+                  onClick={runStart}
+                  disabled={!startWindowOpen || startMut.isPending}
+                  data-testid="booking-start-button"
+                >
                   {t('booking.actions.start')}
                 </Button>
                 {!startWindowOpen && (

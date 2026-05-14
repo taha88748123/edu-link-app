@@ -20,7 +20,12 @@ export const STATUS_VARIANT: Record<BookingStatus, BadgeVariant> = {
 export function BookingStatusBadge({ status }: { status: BookingStatus }) {
   const { t } = useTranslation();
   return (
-    <Badge variant={STATUS_VARIANT[status]} aria-label={t(`booking.status.${status}`)}>
+    <Badge
+      variant={STATUS_VARIANT[status]}
+      aria-label={t(`booking.status.${status}`)}
+      data-testid="booking-status-badge"
+      data-status={status}
+    >
       {t(`booking.status.${status}`)}
     </Badge>
   );

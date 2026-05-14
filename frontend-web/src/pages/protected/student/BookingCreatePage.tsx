@@ -140,12 +140,13 @@ export default function BookingCreatePage() {
                   value={subjectCode}
                   onChange={(e) => setSubjectCode(e.target.value)}
                   placeholder={t('discover.form.subject_placeholder') ?? ''}
+                  data-testid="booking-subject-select"
                 />
               </div>
               <div className="space-y-1.5">
                 <Label>{t('booking.create.level')}</Label>
                 <Select value={level} onValueChange={(v) => setLevel(v as SchoolLevel)}>
-                  <SelectTrigger>
+                  <SelectTrigger data-testid="booking-level-select">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -160,7 +161,7 @@ export default function BookingCreatePage() {
               <div className="space-y-1.5">
                 <Label>{t('booking.create.modality')}</Label>
                 <Select value={modality} onValueChange={(v) => setModality(v as Modality)}>
-                  <SelectTrigger>
+                  <SelectTrigger data-testid="booking-modality-select">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -181,6 +182,7 @@ export default function BookingCreatePage() {
                   step={15}
                   value={durationMinutes}
                   onChange={(e) => setDurationMinutes(Number(e.target.value))}
+                  data-testid="booking-duration-select"
                 />
               </div>
             </div>
@@ -228,6 +230,7 @@ export default function BookingCreatePage() {
                     <button
                       type="button"
                       onClick={() => setSlotId(s.id)}
+                      data-testid={`booking-slot-${s.id}`}
                       className={`w-full rounded-md border p-3 text-start text-sm transition ${
                         slotId === s.id
                           ? 'border-primary bg-primary/10'
@@ -293,7 +296,11 @@ export default function BookingCreatePage() {
               <Button variant="outline" onClick={back}>
                 {t('common.back')}
               </Button>
-              <Button onClick={submit} disabled={createMut.isPending}>
+              <Button
+                onClick={submit}
+                disabled={createMut.isPending}
+                data-testid="booking-confirm-submit"
+              >
                 {t('booking.create.submit')}
               </Button>
             </div>

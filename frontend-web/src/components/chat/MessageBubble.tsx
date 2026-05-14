@@ -38,7 +38,10 @@ export function MessageBubble({
         'flex items-end gap-2',
         isOwn ? 'justify-end' : 'justify-start',
       )}
+      // Existing test (MessageBubble.test.tsx) queries `message-bubble`; the
+      // E2E suite locates messages by id via `[data-message-id]` instead.
       data-testid="message-bubble"
+      data-message-id={message.id}
       data-moderation={status ?? 'CLEAN'}
     >
       {moderated ? (

@@ -1,0 +1,113 @@
+name: e2e-ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      # Enable the dev OTP backdoor on the auth-service container started below.
+      NAJA7I_AUTH_TEST_MODE: "true"
+      # Pre-seeded admin credentials. Replace with an injected secret in a
+      # real-world CI; for now they default to the placeholder used by
+      # backend/auth-service migrations + seeders.
+      E2E_ADMIN_PHONE: ${{ secrets.E2E_ADMIN_PHONE || '+212600000000' }}
+      E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD || 'AdminTestPass!123' }}
+      E2E_BASE_URL: "http://localhost:5173"
+      E2E_API_URL: "http://localhost:8080"
+      E2E_AUTH_DIRECT_URL: "http://localhost:8101"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Cache Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('backend/**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend-web/package-lock.json
+
+      - name: Cache npm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('frontend-web/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Build backend services (skip tests)
+        working-directory: backend
+        run: |
+          mvn -B -pl auth-service,user-profile-service,calendar-service,pricing-service,booking-service,payment-service,chat-service,video-session-service,ai-agent-service,notification-service,api-gateway,service-discovery,config-server -am clean package -DskipTests
+
+      - name: Install frontend deps + build
+        working-directory: frontend-web
+        run: |
+          npm ci
+          npm run build
+
+      - name: Bring up Docker stack
+        run: |
+          docker compose --profile infra --profile platform --profile services up -d
+          # Wait for the api-gateway and auth-service health to flip green.
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:8080/actuator/health > /dev/null && \
+               curl -sf http://localhost:8101/actuator/health > /dev/null; then
+              echo "Backend healthy"
+              break
+            fi
+            echo "Waiting for backend ($i/60)..."
+            sleep 5
+          done
+
+      - name: Install Playwright browsers
+        working-directory: frontend-web
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E suite
+        working-directory: frontend-web
+        run: npm run e2e
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend-web/playwright-report/
+          retention-days: 14
+
+      - name: Upload Playwright traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: frontend-web/test-results/
+          retention-days: 7
+
+      - name: Dump Docker logs on failure
+        if: failure()
+        run: docker compose logs --no-color --tail 200
+
+      - name: Tear down Docker stack
+        if: always()
+        run: docker compose down -v

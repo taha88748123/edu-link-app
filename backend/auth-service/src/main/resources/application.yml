@@ -96,6 +96,11 @@ naja7i:
     rate-limit-window-minutes: 15
     rate-limit-max-requests: 3
     code-length: 6
+  auth:
+    dev:
+      # Exposes /api/v1/dev/auth/** (used by the e2e test runner to read OTPs).
+      # NEVER set this to true outside of dev/CI. See TestSupportController.
+      test-mode: ${NAJA7I_AUTH_TEST_MODE:false}
 
 logging:
   level:

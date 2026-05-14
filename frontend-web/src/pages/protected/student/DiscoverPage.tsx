@@ -108,6 +108,7 @@ export default function DiscoverPage() {
                     <FormControl>
                       <Input
                         placeholder={t('discover.form.subject_placeholder') ?? ''}
+                        data-testid="discover-subject-select"
                         {...field}
                       />
                     </FormControl>
@@ -127,7 +128,7 @@ export default function DiscoverPage() {
                     <FormLabel>{t('discover.form.level')}</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger data-testid="discover-level-select">
                           <SelectValue />
                         </SelectTrigger>
                       </FormControl>
@@ -150,7 +151,7 @@ export default function DiscoverPage() {
                     <FormLabel>{t('discover.form.modality')}</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger data-testid="discover-modality-select">
                           <SelectValue />
                         </SelectTrigger>
                       </FormControl>
@@ -220,7 +221,12 @@ export default function DiscoverPage() {
               />
 
               <div className="sm:col-span-2 lg:col-span-3">
-                <Button type="submit" disabled={matching.isPending} className="gap-2">
+                <Button
+                  type="submit"
+                  disabled={matching.isPending}
+                  className="gap-2"
+                  data-testid="discover-search-submit"
+                >
                   <Search className="h-4 w-4" />
                   {t('discover.form.submit')}
                 </Button>

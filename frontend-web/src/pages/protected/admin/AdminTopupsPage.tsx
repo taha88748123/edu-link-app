@@ -99,7 +99,7 @@ export default function AdminTopupsPage() {
               </TableHeader>
               <TableBody>
                 {(topupsQuery.data?.items ?? []).map((row) => (
-                  <TableRow key={row.id}>
+                  <TableRow key={row.id} data-testid={`topup-row-${row.id}`}>
                     <TableCell>{formatDateTime(row.createdAt, i18n.language)}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {row.studentId.slice(0, 8)}…
@@ -125,6 +125,7 @@ export default function AdminTopupsPage() {
                         <Button
                           size="sm"
                           onClick={() => setDecisionState({ topup: row, decision: 'APPROVE' })}
+                          data-testid="topup-approve-button"
                         >
                           {t('admin.topups.actions.approve')}
                         </Button>
@@ -135,6 +136,7 @@ export default function AdminTopupsPage() {
                             setDecisionState({ topup: row, decision: 'MODIFY' });
                             setApprovedAmountMad('');
                           }}
+                          data-testid="topup-modify-button"
                         >
                           {t('admin.topups.actions.modify')}
                         </Button>
@@ -142,6 +144,7 @@ export default function AdminTopupsPage() {
                           size="sm"
                           variant="destructive"
                           onClick={() => setDecisionState({ topup: row, decision: 'REJECT' })}
+                          data-testid="topup-reject-button"
                         >
                           {t('admin.topups.actions.reject')}
                         </Button>
@@ -177,6 +180,7 @@ export default function AdminTopupsPage() {
                 min="0"
                 value={approvedAmountMad}
                 onChange={(e) => setApprovedAmountMad(e.target.value)}
+                data-testid="topup-amount-input"
               />
             </div>
           ) : null}

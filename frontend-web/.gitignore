@@ -29,6 +29,11 @@ Thumbs.db
 coverage/
 .nyc_output/
 
+# Playwright artefacts
+playwright-report/
+test-results/
+.playwright/
+
 # Misc
 *.tsbuildinfo
 

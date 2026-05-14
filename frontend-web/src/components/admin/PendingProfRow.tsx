@@ -22,7 +22,7 @@ export function PendingProfRow({
 }) {
   const { t } = useTranslation();
   return (
-    <TableRow>
+    <TableRow data-testid={`validation-row-${prof.userId}`}>
       <TableCell className="text-xs text-muted-foreground">
         {prof.submittedAt ? formatDate(prof.submittedAt, locale) : '—'}
       </TableCell>
@@ -31,13 +31,30 @@ export function PendingProfRow({
       <TableCell>{prof.aiQcmScore ?? '—'}</TableCell>
       <TableCell className="text-end">
         <div className="flex flex-wrap justify-end gap-2">
-          <Button size="sm" variant="outline" onClick={onView} disabled={busy}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onView}
+            disabled={busy}
+            data-testid="validation-view-button"
+          >
             {t('common.view')}
           </Button>
-          <Button size="sm" onClick={onValidate} disabled={busy}>
+          <Button
+            size="sm"
+            onClick={onValidate}
+            disabled={busy}
+            data-testid="validation-approve-button"
+          >
             {t('admin.validations.validate')}
           </Button>
-          <Button size="sm" variant="destructive" onClick={onReject} disabled={busy}>
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={onReject}
+            disabled={busy}
+            data-testid="validation-reject-button"
+          >
             {t('admin.validations.reject')}
           </Button>
         </div>

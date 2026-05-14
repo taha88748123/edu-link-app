@@ -68,12 +68,14 @@ export function ComposeInput({
         rows={2}
         className="resize-none"
         aria-label={t('chat.compose_placeholder')}
+        data-testid="chat-compose-input"
       />
       <Button
         type="button"
         onClick={() => void handleSend()}
         disabled={disabled || sending || value.trim().length === 0}
         aria-label={t('chat.send')}
+        data-testid="chat-send-button"
       >
         <Send className="h-4 w-4" />
         <span className="ms-1 hidden sm:inline">{t('chat.send')}</span>
