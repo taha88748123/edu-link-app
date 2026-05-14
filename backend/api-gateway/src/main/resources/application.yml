@@ -3,6 +3,12 @@ spring:
     name: api-gateway
   config:
     import: "optional:configserver:${SPRING_CLOUD_CONFIG_URI:http://localhost:8888}"
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2s
   cloud:
     gateway:
       discovery:
@@ -60,3 +66,33 @@ naja7i:
     allowed-origins:
       - http://localhost:5173
       - http://localhost:3000
+
+  # ------------------------------------------------------------------
+  # Rate limiting (Bucket4j + Redis). See RateLimitProperties.
+  # Tiers are per-minute token buckets. Anon/login/register are keyed by
+  # client IP; auth/admin tiers are keyed by JWT userId. Actuator endpoints
+  # are NEVER throttled (Prometheus scrapes them continuously).
+  # ------------------------------------------------------------------
+  gateway:
+    rate-limit:
+      enabled: ${NAJA7I_GATEWAY_RATE_LIMIT_ENABLED:true}
+      anon:
+        capacity: 30
+        refill-tokens: 60
+        refill-period: PT1M
+      authenticated:
+        capacity: 150
+        refill-tokens: 300
+        refill-period: PT1M
+      admin:
+        capacity: 300
+        refill-tokens: 600
+        refill-period: PT1M
+      login:
+        capacity: 5
+        refill-tokens: 5
+        refill-period: PT1M
+      register:
+        capacity: 3
+        refill-tokens: 3
+        refill-period: PT1M

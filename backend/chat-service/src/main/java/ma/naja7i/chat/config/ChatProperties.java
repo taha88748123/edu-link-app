@@ -23,6 +23,13 @@ public class ChatProperties {
     private final Moderation moderation = new Moderation();
     private final Bypass bypass = new Bypass();
     private final Anthropic anthropic = new Anthropic();
+    private final Ws ws = new Ws();
+
+    @Getter @Setter
+    public static class Ws {
+        /** Master switch for the STOMP/WS chat endpoint. */
+        private boolean enabled = true;
+    }
 
     @Getter @Setter
     public static class Presence {

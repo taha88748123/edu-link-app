@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ma.naja7i.shared.errors.GlobalExceptionHandler;
+import ma.naja7i.shared.security.JwtService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +15,7 @@ import java.time.Duration;
 
 @Configuration
 @Import(GlobalExceptionHandler.class)
-@EnableConfigurationProperties({ChatProperties.class})
+@EnableConfigurationProperties({ChatProperties.class, JwtProperties.class})
 public class AppConfig {
 
     @Bean
@@ -23,6 +24,15 @@ public class AppConfig {
         om.registerModule(new JavaTimeModule());
         om.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return om;
+    }
+
+    /**
+     * JWT verifier used by the STOMP CONNECT interceptor. Must use the SAME
+     * secret as the gateway and auth-service.
+     */
+    @Bean
+    public JwtService jwtService(JwtProperties props) {
+        return new JwtService(props.getSecret(), props.getAccessTtl(), props.getIssuer());
     }
 
     /**

@@ -24,6 +24,7 @@ import {
   useSendMessage,
   useTyping,
 } from '@/hooks/queries/useChat';
+import { useChatSocket } from '@/hooks/useChatSocket';
 
 /**
  * Conversation detail page. Real-time-ish: messages refetched on a 3s
@@ -38,7 +39,12 @@ export default function ChatDetailPage() {
   const formatApiError = useApiError();
 
   const conversationQuery = useConversation(conversationId);
-  const messagesQuery = useMessages(conversationId);
+  const socket = useChatSocket(conversationId);
+  // Pause REST polling when the WebSocket is connected — fall back automatically
+  // when it disconnects, reconnects, or fails outright (5 retries exhausted).
+  const messagesQuery = useMessages(conversationId, {}, {
+    pollingDisabled: socket.status === 'connected',
+  });
   const sendMut = useSendMessage();
   const typingMut = useTyping();
   const markReadMut = useMarkRead();
@@ -108,6 +114,7 @@ export default function ChatDetailPage() {
           </Link>
         </Button>
         <h1 className="text-xl font-semibold">{t('chat.detail_title')}</h1>
+        <ChatSocketBadge status={socket.status} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-[280px_1fr]">
@@ -202,5 +209,44 @@ export default function ChatDetailPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+/**
+ * Small dot-badge that mirrors the {@link useChatSocket} state. Green = live,
+ * amber = reconnecting, red = REST fallback active, gray = idle / pre-connect.
+ * Aria-labelled so screen readers announce the change.
+ */
+function ChatSocketBadge({ status }: { status: import('@/hooks/useChatSocket').ChatSocketStatus }) {
+  const { t } = useTranslation();
+  const tone =
+    status === 'connected'
+      ? 'bg-emerald-500'
+      : status === 'reconnecting'
+      ? 'bg-amber-500'
+      : status === 'failed'
+      ? 'bg-red-500'
+      : 'bg-slate-400';
+  const labelKey =
+    status === 'connected'
+      ? 'chat.ws.connected'
+      : status === 'reconnecting'
+      ? 'chat.ws.reconnecting'
+      : status === 'failed'
+      ? 'chat.ws.failed'
+      : 'chat.ws.idle';
+  // Translation keys are optional — fall back to the raw status if missing.
+  const label = t(labelKey, { defaultValue: status });
+  return (
+    <span
+      className="ms-2 inline-flex items-center gap-1.5 rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground"
+      data-testid="chat-ws-badge"
+      data-status={status}
+      title={label}
+      aria-label={label}
+    >
+      <span aria-hidden className={`inline-block h-2 w-2 rounded-full ${tone}`} />
+      <span className="hidden sm:inline">{label}</span>
+    </span>
   );
 }

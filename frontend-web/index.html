@@ -6,6 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="NAJA7I — Plateforme EdTech marocaine. Apprends, réussis." />
     <meta name="theme-color" content="#0f172a" />
+    <!--
+      Dev fallback CSP — applies when running `vite dev` (Vite serves index.html
+      directly, no nginx in front). Production CSP is set as an HTTP header in
+      nginx.conf (which OVERRIDES this meta tag once deployed). We deliberately
+      keep both in sync EXCEPT we widen connect-src here to accommodate the
+      Vite HMR websocket (ws://localhost:5173) and the locally-running gateway.
+    -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' http://localhost:5173 ws://localhost:5173 http://localhost:8080 ws://localhost:8080 https://*.livekit.cloud wss://*.livekit.cloud; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'" />
     <title>NAJA7I — Apprends, réussis.</title>
   </head>
   <body class="bg-background text-foreground">

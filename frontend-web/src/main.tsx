@@ -8,6 +8,11 @@ import './i18n/config';
 import { router } from './routes';
 import { useAuthStore } from './auth/auth.store';
 import { Toaster } from './components/ui/toaster';
+import { installCspViolationReporter } from './lib/csp-violation-reporter';
+
+// Surface any CSP block in the browser console — invaluable when tightening the
+// policy. The reporter is a no-op in jsdom/node test envs.
+installCspViolationReporter();
 
 // Single TanStack Query client for the whole app.
 const queryClient = new QueryClient({

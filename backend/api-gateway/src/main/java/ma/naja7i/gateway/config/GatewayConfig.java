@@ -60,6 +60,10 @@ public class GatewayConfig {
                 // Phase 3
                 .route("chat-service", r -> r.path("/api/v1/chat/**", "/api/v1/conversations/**")
                         .uri("lb://chat-service"))
+                // WebSocket handshake for real-time chat — Spring Cloud Gateway routes the
+                // HTTP/1.1 Upgrade transparently to the chat-service instance picked by Eureka.
+                .route("chat-service-ws", r -> r.path("/ws/chat/**")
+                        .uri("lb:ws://chat-service"))
                 .route("video-session-service", r -> r.path("/api/v1/video/**", "/api/v1/sessions/**")
                         .uri("lb://video-session-service"))
                 .route("ai-agent-service", r -> r.path("/api/v1/ai/**")

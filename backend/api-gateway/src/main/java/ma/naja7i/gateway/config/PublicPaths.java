@@ -20,7 +20,10 @@ public final class PublicPaths {
             "/api/v1/auth/verify-otp",
             "/api/v1/auth/refresh",
             "/api/v1/auth/password/reset-request",
-            "/api/v1/auth/password/reset"
+            "/api/v1/auth/password/reset",
+            // WS handshake — auth is performed inside the STOMP CONNECT frame by
+            // chat-service's JwtStompInterceptor, not at the HTTP upgrade level.
+            "/ws/chat/**"
     );
 
     private PublicPaths() {}

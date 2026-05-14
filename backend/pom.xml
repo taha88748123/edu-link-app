@@ -29,6 +29,7 @@
     <mapstruct.version>1.6.2</mapstruct.version>
     <jjwt.version>0.12.6</jjwt.version>
     <testcontainers.version>1.20.3</testcontainers.version>
+    <bucket4j.version>8.10.1</bucket4j.version>
 
     <!-- Observability (LGTM stack) — see infrastructure/observability/.
          opentelemetry-* versions come from Spring Boot's opentelemetry-bom (managed
@@ -143,6 +144,18 @@
         <version>${testcontainers.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+
+      <!-- Bucket4j (rate limiting at api-gateway, Redis-backed). -->
+      <dependency>
+        <groupId>com.bucket4j</groupId>
+        <artifactId>bucket4j-core</artifactId>
+        <version>${bucket4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.bucket4j</groupId>
+        <artifactId>bucket4j-redis</artifactId>
+        <version>${bucket4j.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

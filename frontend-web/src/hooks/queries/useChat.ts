@@ -50,12 +50,24 @@ export function useConversation(id: string | undefined) {
   });
 }
 
-export function useMessages(id: string | undefined, filters: ListMessagesParams = {}) {
+export interface UseMessagesOptions {
+  /**
+   * Disables the 3 s polling fallback. Pass {@code true} when a WebSocket
+   * subscription is live and pushes new messages — saves O(N) gateway hits.
+   */
+  pollingDisabled?: boolean;
+}
+
+export function useMessages(
+  id: string | undefined,
+  filters: ListMessagesParams = {},
+  options: UseMessagesOptions = {},
+) {
   return useQuery({
     queryKey: chatKeys.messages(id ?? '', filters),
     queryFn: () => chatApi.listMessages(id as string, filters),
     enabled: Boolean(id),
-    refetchInterval: readPollMs(),
+    refetchInterval: options.pollingDisabled ? false : readPollMs(),
   });
 }
 

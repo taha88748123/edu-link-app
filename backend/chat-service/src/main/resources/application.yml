@@ -62,9 +62,16 @@ springdoc:
     path: /swagger-ui.html
 
 naja7i:
+  jwt:
+    # MUST match api-gateway / auth-service. Used by the STOMP CONNECT interceptor.
+    secret: ${NAJA7I_JWT_SECRET:dev-only-secret-change-me-32+chars-required}
+    issuer: naja7i-auth
+    access-ttl: PT15M
   chat:
     internal-key: ${NAJA7I_INTERNAL_KEY:dev-internal-key}
     producer: chat-service
+    ws:
+      enabled: ${NAJA7I_CHAT_WS_ENABLED:true}
     presence:
       ttl-seconds: 30
     typing:

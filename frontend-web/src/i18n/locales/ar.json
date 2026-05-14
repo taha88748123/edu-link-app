@@ -508,6 +508,12 @@
     "message": {
       "moderation_hint": "تمت مراجعة الرسالة آلياً",
       "no_body": "رسالة فارغة"
+    },
+    "ws": {
+      "connected": "اتصال مباشر",
+      "reconnecting": "إعادة الاتصال…",
+      "failed": "غير متصل",
+      "idle": "في انتظار"
     }
   },
   "video": {

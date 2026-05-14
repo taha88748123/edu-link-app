@@ -508,6 +508,12 @@
     "message": {
       "moderation_hint": "Automatic moderation applied",
       "no_body": "Empty message"
+    },
+    "ws": {
+      "connected": "Live",
+      "reconnecting": "Reconnecting…",
+      "failed": "Offline",
+      "idle": "Idle"
     }
   },
   "video": {

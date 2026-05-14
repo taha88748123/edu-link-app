@@ -1,3 +1,4 @@
+import { lazy, Suspense, type ComponentType, type ReactElement } from 'react';
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 
 import App from './App';
@@ -6,44 +7,67 @@ import { RequireRole } from './auth/RequireRole';
 import { useAuth } from './auth/useAuth';
 import { AppShell } from './components/layout/AppShell';
 import { PublicShell } from './components/layout/PublicShell';
+import { LoadingScreen } from './components/layout/LoadingScreen';
 
-import LandingPage from './pages/public/LandingPage';
-import LoginPage from './pages/public/LoginPage';
-import RegisterPage from './pages/public/RegisterPage';
-import VerifyOtpPage from './pages/public/VerifyOtpPage';
-import PasswordResetRequestPage from './pages/public/PasswordResetRequestPage';
-import PasswordResetConfirmPage from './pages/public/PasswordResetConfirmPage';
+/**
+ * Every page route is code-split via {@link lazy} so the initial bundle only
+ * loads the auth + shell + landing chunk. Heavy modules (LiveKit, admin tools)
+ * are fetched on demand the first time the user opens that route.
+ *
+ * IMPORTANT: lazy imports MUST point at a single page file with a default
+ * export — bundlers cannot statically analyse re-export barrels.
+ */
+const LandingPage = lazy(() => import('./pages/public/LandingPage'));
+const LoginPage = lazy(() => import('./pages/public/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/public/RegisterPage'));
+const VerifyOtpPage = lazy(() => import('./pages/public/VerifyOtpPage'));
+const PasswordResetRequestPage = lazy(() => import('./pages/public/PasswordResetRequestPage'));
+const PasswordResetConfirmPage = lazy(() => import('./pages/public/PasswordResetConfirmPage'));
 
-import StudentDashboardPage from './pages/protected/student/StudentDashboardPage';
-import DiscoverPage from './pages/protected/student/DiscoverPage';
-import ProfPublicPage from './pages/protected/student/ProfPublicPage';
-import BookingCreatePage from './pages/protected/student/BookingCreatePage';
-import WalletPage from './pages/protected/student/WalletPage';
-import TopupsPage from './pages/protected/student/TopupsPage';
+const StudentDashboardPage = lazy(() => import('./pages/protected/student/StudentDashboardPage'));
+const DiscoverPage = lazy(() => import('./pages/protected/student/DiscoverPage'));
+const ProfPublicPage = lazy(() => import('./pages/protected/student/ProfPublicPage'));
+const BookingCreatePage = lazy(() => import('./pages/protected/student/BookingCreatePage'));
+const WalletPage = lazy(() => import('./pages/protected/student/WalletPage'));
+const TopupsPage = lazy(() => import('./pages/protected/student/TopupsPage'));
 
-import ProfDashboardPage from './pages/protected/prof/ProfDashboardPage';
-import CalendarPage from './pages/protected/prof/CalendarPage';
-import PricingPage from './pages/protected/prof/PricingPage';
-import ProfWalletPage from './pages/protected/prof/ProfWalletPage';
+const ProfDashboardPage = lazy(() => import('./pages/protected/prof/ProfDashboardPage'));
+const CalendarPage = lazy(() => import('./pages/protected/prof/CalendarPage'));
+const PricingPage = lazy(() => import('./pages/protected/prof/PricingPage'));
+const ProfWalletPage = lazy(() => import('./pages/protected/prof/ProfWalletPage'));
 
-import BookingsListPage from './pages/protected/bookings/BookingsListPage';
-import BookingDetailPage from './pages/protected/bookings/BookingDetailPage';
+const BookingsListPage = lazy(() => import('./pages/protected/bookings/BookingsListPage'));
+const BookingDetailPage = lazy(() => import('./pages/protected/bookings/BookingDetailPage'));
 
-import ChatListPage from './pages/protected/chat/ChatListPage';
-import ChatDetailPage from './pages/protected/chat/ChatDetailPage';
-import VideoLobbyPage from './pages/protected/video/VideoLobbyPage';
-import VideoRoomPage from './pages/protected/video/VideoRoomPage';
+const ChatListPage = lazy(() => import('./pages/protected/chat/ChatListPage'));
+const ChatDetailPage = lazy(() => import('./pages/protected/chat/ChatDetailPage'));
+const VideoLobbyPage = lazy(() => import('./pages/protected/video/VideoLobbyPage'));
+const VideoRoomPage = lazy(() => import('./pages/protected/video/VideoRoomPage'));
 
-import AdminDashboardPage from './pages/protected/admin/AdminDashboardPage';
-import AdminValidationsPage from './pages/protected/admin/AdminValidationsPage';
-import AdminTopupsPage from './pages/protected/admin/AdminTopupsPage';
-import AdminPayoutsPage from './pages/protected/admin/AdminPayoutsPage';
-import AdminDisputesPage from './pages/protected/admin/AdminDisputesPage';
-import AdminAuditPage from './pages/protected/admin/AdminAuditPage';
-import AdminBalanceAdjustPage from './pages/protected/admin/AdminBalanceAdjustPage';
+const AdminDashboardPage = lazy(() => import('./pages/protected/admin/AdminDashboardPage'));
+const AdminValidationsPage = lazy(() => import('./pages/protected/admin/AdminValidationsPage'));
+const AdminTopupsPage = lazy(() => import('./pages/protected/admin/AdminTopupsPage'));
+const AdminPayoutsPage = lazy(() => import('./pages/protected/admin/AdminPayoutsPage'));
+const AdminDisputesPage = lazy(() => import('./pages/protected/admin/AdminDisputesPage'));
+const AdminAuditPage = lazy(() => import('./pages/protected/admin/AdminAuditPage'));
+const AdminBalanceAdjustPage = lazy(() => import('./pages/protected/admin/AdminBalanceAdjustPage'));
 
-import NotFoundPage from './pages/protected/NotFoundPage';
-import ForbiddenPage from './pages/protected/ForbiddenPage';
+const NotFoundPage = lazy(() => import('./pages/protected/NotFoundPage'));
+const ForbiddenPage = lazy(() => import('./pages/protected/ForbiddenPage'));
+
+/**
+ * Wraps a lazily-loaded page element in a {@link Suspense} boundary so the
+ * shell stays mounted while the chunk loads (no full-screen flash).
+ */
+function withSuspense(node: ReactElement): ReactElement {
+  return <Suspense fallback={<LoadingScreen />}>{node}</Suspense>;
+}
+
+/** Helper that lifts a plain page Component into a Suspense-wrapped element. */
+function page<P>(C: ComponentType<P>, props?: P): ReactElement {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return withSuspense(<C {...(props as any)} />);
+}
 
 /**
  * Dispatches authenticated users to the right home depending on their role.
@@ -82,12 +106,12 @@ export const router = createBrowserRouter([
           </PublicShell>
         ),
         children: [
-          { path: '/', element: <LandingPage /> },
-          { path: '/login', element: <LoginPage /> },
-          { path: '/register', element: <RegisterPage /> },
-          { path: '/auth/verify-otp', element: <VerifyOtpPage /> },
-          { path: '/auth/forgot-password', element: <PasswordResetRequestPage /> },
-          { path: '/auth/reset-password', element: <PasswordResetConfirmPage /> },
+          { path: '/', element: page(LandingPage) },
+          { path: '/login', element: page(LoginPage) },
+          { path: '/register', element: page(RegisterPage) },
+          { path: '/auth/verify-otp', element: page(VerifyOtpPage) },
+          { path: '/auth/forgot-password', element: page(PasswordResetRequestPage) },
+          { path: '/auth/reset-password', element: page(PasswordResetConfirmPage) },
         ],
       },
 
@@ -109,217 +133,150 @@ export const router = createBrowserRouter([
             path: '/student',
             element: (
               <RequireRole allow={['STUDENT', 'PARENT']}>
-                <StudentDashboardPage />
+                {page(StudentDashboardPage)}
               </RequireRole>
             ),
           },
           {
             path: '/student/discover',
             element: (
-              <RequireRole allow={['STUDENT', 'PARENT']}>
-                <DiscoverPage />
-              </RequireRole>
+              <RequireRole allow={['STUDENT', 'PARENT']}>{page(DiscoverPage)}</RequireRole>
             ),
           },
           {
             path: '/student/profs/:profId',
             element: (
-              <RequireRole allow={['STUDENT', 'PARENT']}>
-                <ProfPublicPage />
-              </RequireRole>
+              <RequireRole allow={['STUDENT', 'PARENT']}>{page(ProfPublicPage)}</RequireRole>
             ),
           },
           {
             path: '/student/profs/:profId/book',
             element: (
-              <RequireRole allow={['STUDENT', 'PARENT']}>
-                <BookingCreatePage />
-              </RequireRole>
+              <RequireRole allow={['STUDENT', 'PARENT']}>{page(BookingCreatePage)}</RequireRole>
             ),
           },
           {
             path: '/student/bookings',
             element: (
               <RequireRole allow={['STUDENT', 'PARENT']}>
-                <BookingsListPage basePath="/student" />
+                {page(BookingsListPage, { basePath: '/student' as const })}
               </RequireRole>
             ),
           },
           {
             path: '/student/bookings/:id',
             element: (
-              <RequireRole allow={['STUDENT', 'PARENT']}>
-                <BookingDetailPage />
-              </RequireRole>
+              <RequireRole allow={['STUDENT', 'PARENT']}>{page(BookingDetailPage)}</RequireRole>
             ),
           },
           {
             path: '/student/wallet',
-            element: (
-              <RequireRole allow={['STUDENT', 'PARENT']}>
-                <WalletPage />
-              </RequireRole>
-            ),
+            element: <RequireRole allow={['STUDENT', 'PARENT']}>{page(WalletPage)}</RequireRole>,
           },
           {
             path: '/student/topups',
-            element: (
-              <RequireRole allow={['STUDENT', 'PARENT']}>
-                <TopupsPage />
-              </RequireRole>
-            ),
+            element: <RequireRole allow={['STUDENT', 'PARENT']}>{page(TopupsPage)}</RequireRole>,
           },
 
           // PROF routes
           {
             path: '/prof',
-            element: (
-              <RequireRole allow={['PROF']}>
-                <ProfDashboardPage />
-              </RequireRole>
-            ),
+            element: <RequireRole allow={['PROF']}>{page(ProfDashboardPage)}</RequireRole>,
           },
           {
             path: '/prof/calendar',
-            element: (
-              <RequireRole allow={['PROF']}>
-                <CalendarPage />
-              </RequireRole>
-            ),
+            element: <RequireRole allow={['PROF']}>{page(CalendarPage)}</RequireRole>,
           },
           {
             path: '/prof/pricing',
-            element: (
-              <RequireRole allow={['PROF']}>
-                <PricingPage />
-              </RequireRole>
-            ),
+            element: <RequireRole allow={['PROF']}>{page(PricingPage)}</RequireRole>,
           },
           {
             path: '/prof/bookings',
             element: (
               <RequireRole allow={['PROF']}>
-                <BookingsListPage basePath="/prof" />
+                {page(BookingsListPage, { basePath: '/prof' as const })}
               </RequireRole>
             ),
           },
           {
             path: '/prof/bookings/:id',
-            element: (
-              <RequireRole allow={['PROF']}>
-                <BookingDetailPage />
-              </RequireRole>
-            ),
+            element: <RequireRole allow={['PROF']}>{page(BookingDetailPage)}</RequireRole>,
           },
           {
             path: '/prof/wallet',
-            element: (
-              <RequireRole allow={['PROF']}>
-                <ProfWalletPage />
-              </RequireRole>
-            ),
+            element: <RequireRole allow={['PROF']}>{page(ProfWalletPage)}</RequireRole>,
           },
 
           // CHAT (STUDENT, PARENT, PROF — backend enforces participant scoping)
           {
             path: '/chat',
             element: (
-              <RequireRole allow={['STUDENT', 'PARENT', 'PROF']}>
-                <ChatListPage />
-              </RequireRole>
+              <RequireRole allow={['STUDENT', 'PARENT', 'PROF']}>{page(ChatListPage)}</RequireRole>
             ),
           },
           {
             path: '/chat/:conversationId',
             element: (
               <RequireRole allow={['STUDENT', 'PARENT', 'PROF']}>
-                <ChatDetailPage />
+                {page(ChatDetailPage)}
               </RequireRole>
             ),
           },
 
-          // VIDEO ROOM (STUDENT, PARENT, PROF)
+          // VIDEO ROOM (STUDENT, PARENT, PROF). LiveKit is in its own chunk thanks to
+          // the lazy import + manualChunks split below.
           {
             path: '/video/sessions/:sessionId/lobby',
             element: (
               <RequireRole allow={['STUDENT', 'PARENT', 'PROF']}>
-                <VideoLobbyPage />
+                {page(VideoLobbyPage)}
               </RequireRole>
             ),
           },
           {
             path: '/video/sessions/:sessionId',
             element: (
-              <RequireRole allow={['STUDENT', 'PARENT', 'PROF']}>
-                <VideoRoomPage />
-              </RequireRole>
+              <RequireRole allow={['STUDENT', 'PARENT', 'PROF']}>{page(VideoRoomPage)}</RequireRole>
             ),
           },
 
           // ADMIN routes
           {
             path: '/admin',
-            element: (
-              <RequireRole allow={['ADMIN']}>
-                <AdminDashboardPage />
-              </RequireRole>
-            ),
+            element: <RequireRole allow={['ADMIN']}>{page(AdminDashboardPage)}</RequireRole>,
           },
           {
             path: '/admin/validations',
-            element: (
-              <RequireRole allow={['ADMIN']}>
-                <AdminValidationsPage />
-              </RequireRole>
-            ),
+            element: <RequireRole allow={['ADMIN']}>{page(AdminValidationsPage)}</RequireRole>,
           },
           {
             path: '/admin/topups',
-            element: (
-              <RequireRole allow={['ADMIN']}>
-                <AdminTopupsPage />
-              </RequireRole>
-            ),
+            element: <RequireRole allow={['ADMIN']}>{page(AdminTopupsPage)}</RequireRole>,
           },
           {
             path: '/admin/payouts',
-            element: (
-              <RequireRole allow={['ADMIN']}>
-                <AdminPayoutsPage />
-              </RequireRole>
-            ),
+            element: <RequireRole allow={['ADMIN']}>{page(AdminPayoutsPage)}</RequireRole>,
           },
           {
             path: '/admin/disputes',
-            element: (
-              <RequireRole allow={['ADMIN']}>
-                <AdminDisputesPage />
-              </RequireRole>
-            ),
+            element: <RequireRole allow={['ADMIN']}>{page(AdminDisputesPage)}</RequireRole>,
           },
           {
             path: '/admin/audit',
-            element: (
-              <RequireRole allow={['ADMIN']}>
-                <AdminAuditPage />
-              </RequireRole>
-            ),
+            element: <RequireRole allow={['ADMIN']}>{page(AdminAuditPage)}</RequireRole>,
           },
           {
             path: '/admin/balance-adjust',
-            element: (
-              <RequireRole allow={['ADMIN']}>
-                <AdminBalanceAdjustPage />
-              </RequireRole>
-            ),
+            element: <RequireRole allow={['ADMIN']}>{page(AdminBalanceAdjustPage)}</RequireRole>,
           },
 
-          { path: '/forbidden', element: <ForbiddenPage /> },
+          { path: '/forbidden', element: page(ForbiddenPage) },
         ],
       },
 
       // --- 404 fallback.
-      { path: '*', element: <NotFoundPage /> },
+      { path: '*', element: page(NotFoundPage) },
     ],
   },
 ]);

@@ -15,6 +15,7 @@ import ma.naja7i.chat.infrastructure.messaging.KafkaEventPublisher;
 import ma.naja7i.chat.infrastructure.messaging.payload.ChatBypassFlaggedPayload;
 import ma.naja7i.chat.infrastructure.messaging.payload.ChatMessagePostedPayload;
 import ma.naja7i.chat.infrastructure.persistence.MessageRepository;
+import ma.naja7i.chat.infrastructure.ws.ChatBroadcaster;
 import ma.naja7i.shared.dto.Role;
 import ma.naja7i.shared.errors.BusinessException;
 import ma.naja7i.shared.errors.ErrorCode;
@@ -59,6 +60,7 @@ public class MessageService {
     private final MessageModerator moderator;
     private final BypassAnalyzer bypassAnalyzer;
     private final KafkaEventPublisher kafkaPublisher;
+    private final ChatBroadcaster chatBroadcaster;
 
     // ---------------------------------------------------------------- send
 
@@ -131,6 +133,11 @@ public class MessageService {
         // Hand off to the async analyser (logging or anthropic). The analyser is
         // responsible for emitting any further events / updating the moderation row.
         bypassAnalyzer.analyse(saved.getId(), conv.getId(), senderId, mod.getOriginalBody());
+
+        // Real-time fan-out to subscribers of /topic/conversations/{id}/messages.
+        // The broadcast carries the MODERATED body only (same as REST); the
+        // bypass.flagged.v1 Kafka event remains the canonical anti-bypass signal.
+        chatBroadcaster.broadcastMessage(conv.getId(), saved);
 
         return saved;
     }
