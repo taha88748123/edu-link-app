@@ -137,7 +137,10 @@ services:
     image: naja7i/config-server:dev
     environment:
       <<: *common-env
-      SPRING_PROFILES_ACTIVE: docker
+      # `native` keeps Spring Cloud Config in classpath-mode (vs the default
+      # git mode which would require a remote URI). `docker` swaps the human
+      # logback pattern for the JSON encoder shipped by shared-observability.
+      SPRING_PROFILES_ACTIVE: native,docker
     ports: ["8888:8888"]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
