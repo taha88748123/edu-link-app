@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   MessageSquare,
   ScrollText,
+  Search,
   Tag,
   Wallet,
 } from 'lucide-react';
@@ -29,17 +30,18 @@ interface NavItem {
 
 const STUDENT_NAV: NavItem[] = [
   { to: '/student', labelKey: 'nav.dashboard', icon: LayoutDashboard },
-  { to: '/student/bookings', labelKey: 'nav.bookings', icon: ClipboardList, soon: true },
-  { to: '/student/wallet', labelKey: 'nav.wallet', icon: Wallet, soon: true },
+  { to: '/student/discover', labelKey: 'nav.discover', icon: Search },
+  { to: '/student/bookings', labelKey: 'nav.bookings', icon: ClipboardList },
+  { to: '/student/wallet', labelKey: 'nav.wallet', icon: Wallet },
   { to: '/student/chat', labelKey: 'nav.chat', icon: MessageSquare, soon: true },
 ];
 
 const PROF_NAV: NavItem[] = [
   { to: '/prof', labelKey: 'nav.dashboard', icon: LayoutDashboard },
-  { to: '/prof/calendar', labelKey: 'nav.calendar', icon: Calendar, soon: true },
-  { to: '/prof/pricing', labelKey: 'nav.pricing', icon: Tag, soon: true },
-  { to: '/prof/bookings', labelKey: 'nav.bookings', icon: ClipboardList, soon: true },
-  { to: '/prof/wallet', labelKey: 'nav.wallet', icon: Wallet, soon: true },
+  { to: '/prof/calendar', labelKey: 'nav.calendar', icon: Calendar },
+  { to: '/prof/pricing', labelKey: 'nav.pricing', icon: Tag },
+  { to: '/prof/bookings', labelKey: 'nav.bookings', icon: ClipboardList },
+  { to: '/prof/wallet', labelKey: 'nav.wallet', icon: Wallet },
   { to: '/prof/chat', labelKey: 'nav.chat', icon: MessageSquare, soon: true },
 ];
 

@@ -20,7 +20,24 @@
     "search": "Search",
     "close": "Close",
     "continue": "Continue",
-    "or": "or"
+    "or": "or",
+    "confirm": "Confirm",
+    "add": "Add",
+    "create": "Create",
+    "actions": "Actions",
+    "view": "View",
+    "all": "All",
+    "none": "None",
+    "optional": "(optional)",
+    "from": "From",
+    "to": "To",
+    "date": "Date",
+    "time": "Time",
+    "amount": "Amount",
+    "status": "Status",
+    "noop": "No results",
+    "no_results": "No results to display.",
+    "empty": "Nothing to show."
   },
   "roles": {
     "STUDENT": "Student",
@@ -33,6 +50,30 @@
     "DOMICILE": "At home",
     "LOCAL": "At venue"
   },
+  "level": {
+    "PRIMAIRE": "Primary",
+    "COLLEGE": "Middle school",
+    "LYCEE": "High school",
+    "SUPERIEUR": "Higher education"
+  },
+  "weekday": {
+    "0": "Monday",
+    "1": "Tuesday",
+    "2": "Wednesday",
+    "3": "Thursday",
+    "4": "Friday",
+    "5": "Saturday",
+    "6": "Sunday"
+  },
+  "weekday_short": {
+    "0": "Mon",
+    "1": "Tue",
+    "2": "Wed",
+    "3": "Thu",
+    "4": "Fri",
+    "5": "Sat",
+    "6": "Sun"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "bookings": "My bookings",
@@ -41,6 +82,7 @@
     "wallet": "My wallet",
     "chat": "Messages",
     "profile": "My profile",
+    "discover": "Find a tutor",
     "validations": "Teacher validations",
     "topups": "Top-ups",
     "payouts": "Payouts",
@@ -135,6 +177,11 @@
     "EXTERNAL_DEPENDENCY_FAILURE": "External service unavailable. Try again later.",
     "INTERNAL_ERROR": "Something went wrong. Please retry.",
     "NETWORK_ERROR": "No connection to the server.",
+    "BOOKING_INSUFFICIENT_BALANCE": "Insufficient balance to complete this booking.",
+    "BOOKING_SLOT_UNAVAILABLE": "This slot is no longer available.",
+    "BOOKING_INVALID_TRANSITION": "This action is not allowed at this stage.",
+    "PROFILE_NOT_FOUND": "Profile not found.",
+    "PROFILE_PROF_NOT_VALIDATED": "This teacher hasn't been validated yet.",
     "generic": "Something went wrong."
   },
   "landing": {
@@ -187,5 +234,250 @@
     "not_found_cta": "Back home",
     "forbidden_title": "Access denied",
     "forbidden_desc": "Your role doesn't allow you to access this page."
+  },
+  "discover": {
+    "title": "Find a tutor",
+    "subtitle": "Tell us what you need — we'll suggest the most relevant tutors.",
+    "form": {
+      "subject": "Subject",
+      "subject_placeholder": "e.g. math, physics, English…",
+      "level": "Level",
+      "modality": "Modality",
+      "budget": "Max budget (MAD / session)",
+      "city": "City",
+      "day": "Preferred day",
+      "duration": "Duration (minutes)",
+      "submit": "Search tutors"
+    },
+    "results_title": "Results",
+    "score": "Score",
+    "rationale": "Why",
+    "view_profile": "View profile",
+    "empty": "No tutor matches your filters.",
+    "match_count": "{{count}} tutor(s) found"
+  },
+  "profile": {
+    "rating_label": "{{stars}} ★ ({{count}} reviews)",
+    "subjects": "Subjects",
+    "modalities": "Modalities",
+    "locations": "Locations",
+    "bio": "About",
+    "experience_years": "{{count}} years of experience",
+    "no_bio": "No bio yet.",
+    "book_cta": "Book a session",
+    "rates_title": "Rates",
+    "packs_title": "Packs",
+    "no_rates": "No rate published for this filter.",
+    "no_packs": "No pack published for this filter."
+  },
+  "booking": {
+    "list_title": "My bookings",
+    "tabs": {
+      "upcoming": "Upcoming",
+      "past": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "columns": {
+      "subject": "Subject",
+      "with": "With",
+      "when": "When",
+      "amount": "Amount",
+      "status": "Status",
+      "student": "Student"
+    },
+    "empty_upcoming": "No upcoming bookings.",
+    "empty_past": "No completed sessions.",
+    "empty_cancelled": "No cancellations.",
+    "view": "View",
+    "detail_title": "Booking details",
+    "summary": "Summary",
+    "timeline": "Timeline",
+    "price_breakdown": {
+      "base": "Base price",
+      "fee": "Platform fee",
+      "total": "Total",
+      "title": "Price breakdown"
+    },
+    "anti_bypass": "Contact details will become available after the teacher accepts.",
+    "actions": {
+      "cancel": "Cancel",
+      "confirm": "Confirm session",
+      "dispute": "Open dispute",
+      "accept": "Accept",
+      "decline": "Decline",
+      "start": "Start"
+    },
+    "status": {
+      "DEMANDEE": "Requested",
+      "ACCEPTEE_PAR_PROF": "Accepted",
+      "EN_COURS": "In progress",
+      "TERMINEE": "Completed",
+      "CONFIRMEE": "Confirmed",
+      "ANNULEE": "Cancelled",
+      "LITIGE": "Disputed"
+    },
+    "create": {
+      "title": "Book a session",
+      "step1": "Lesson details",
+      "step2": "Pick a slot",
+      "step3": "Review and confirm",
+      "subject": "Subject",
+      "level": "Level",
+      "modality": "Modality",
+      "duration": "Duration (minutes)",
+      "quote": "Computing price…",
+      "no_slots": "No slot available for this filter in the next 30 days.",
+      "pick_slot": "Pick a slot",
+      "selected_slot": "Selected slot",
+      "submit": "Confirm booking",
+      "success": "Booking created. You'll be notified once it's accepted."
+    },
+    "start_window_hint": "Available 15 min before the scheduled start.",
+    "cancel_dialog": {
+      "title": "Cancel this booking?",
+      "reason": "Reason (optional)",
+      "confirm": "Confirm cancellation"
+    },
+    "decline_dialog": {
+      "title": "Decline this request?",
+      "reason": "Reason (optional)",
+      "confirm": "Confirm decline"
+    },
+    "dispute_dialog": {
+      "title": "Open a dispute",
+      "cause": "Reason",
+      "evidence": "Evidence URLs",
+      "confirm": "Open dispute"
+    },
+    "confirm_dialog": {
+      "title": "Confirm the session",
+      "desc": "Confirming releases the payment to the teacher. Only confirm if the session went well.",
+      "confirm": "Confirm"
+    }
+  },
+  "calendar": {
+    "title": "My calendar",
+    "tabs": {
+      "rules": "Availability rules",
+      "slots": "Slots"
+    },
+    "rules": {
+      "title": "Rules",
+      "subtitle": "Define your weekly or one-off availability. Slots are materialised from these rules.",
+      "add": "Add rule",
+      "edit": "Edit rule",
+      "recurrence": "Recurrence",
+      "WEEKLY": "Weekly",
+      "ONE_OFF": "One-off",
+      "day": "Day of week",
+      "date": "Date",
+      "start_time": "Start time",
+      "end_time": "End time",
+      "timezone": "Timezone",
+      "active": "Active",
+      "no_rules": "No rule yet."
+    },
+    "slots": {
+      "title": "Slots",
+      "generate": "Generate slots",
+      "generated": "{{created}} slots created, {{skipped}} skipped.",
+      "filter_status": "Filter by status",
+      "prev_week": "Previous week",
+      "next_week": "Next week",
+      "today": "This week",
+      "no_slots": "No slot this week.",
+      "block": "Block",
+      "unblock": "Unblock",
+      "block_dialog_title": "Manage slot"
+    },
+    "status": {
+      "AVAILABLE": "Available",
+      "RESERVED_PENDING": "Reserved (pending)",
+      "BOOKED": "Booked",
+      "BLOCKED": "Blocked"
+    }
+  },
+  "pricing": {
+    "title": "My pricing",
+    "tabs": {
+      "rates": "Per-session rates",
+      "packs": "Packs"
+    },
+    "rate": {
+      "add": "Add rate",
+      "edit": "Edit rate",
+      "subject": "Subject",
+      "level": "Level",
+      "modality": "Modality",
+      "duration": "Duration (minutes)",
+      "day": "Day",
+      "day_any": "Any day",
+      "amount": "Price per session (MAD)",
+      "active": "Active",
+      "no_rates": "No rate published."
+    },
+    "pack": {
+      "add": "Add pack",
+      "edit": "Edit pack",
+      "sessions": "Sessions count",
+      "discount": "Discount (%)",
+      "total": "Total price (MAD)",
+      "no_packs": "No pack published."
+    },
+    "delete_confirm": "Delete permanently?"
+  },
+  "payment": {
+    "wallet_title": "My wallet",
+    "balance_card": "Available balance",
+    "topup_cta": "Request a top-up",
+    "payout_cta": "Request a payout",
+    "history_title": "History",
+    "history_empty": "No operation.",
+    "operation": {
+      "TOPUP": "Top-up",
+      "ESCROW_LOCK": "Escrow lock",
+      "ESCROW_RELEASE": "Release to teacher",
+      "REFUND": "Refund",
+      "PAYOUT": "Payout",
+      "ADMIN_ADJUST": "Admin adjustment",
+      "ADMIN_CREDIT": "Admin credit",
+      "ADMIN_DEBIT": "Admin debit"
+    },
+    "topup": {
+      "title": "Request a top-up",
+      "amount": "Amount (MAD)",
+      "method": "Payment method",
+      "method_CASHPLUS": "Cash Plus",
+      "method_BANK_TRANSFER": "Bank transfer",
+      "method_WHATSAPP": "WhatsApp",
+      "method_OTHER": "Other",
+      "proof": "Proof URL (receipt, screenshot, …)",
+      "proof_hint": "File upload lands in v2. For now paste a public URL.",
+      "submit": "Send request",
+      "list_title": "My top-ups",
+      "list_empty": "No top-up.",
+      "status": {
+        "EN_ATTENTE_ADMIN": "Pending",
+        "APPROVED": "Approved",
+        "MODIFIED": "Modified",
+        "REJECTED": "Rejected"
+      },
+      "success": "Top-up sent. You'll be notified once it's validated."
+    },
+    "payout": {
+      "title": "Request a payout",
+      "amount": "Amount (MAD)",
+      "iban": "IBAN / RIB",
+      "submit": "Send request",
+      "list_title": "My payouts",
+      "list_empty": "No payout.",
+      "status": {
+        "REQUESTED": "Requested",
+        "APPROVED": "Approved",
+        "PAID": "Paid",
+        "REJECTED": "Rejected"
+      },
+      "success": "Request sent."
+    }
   }
 }

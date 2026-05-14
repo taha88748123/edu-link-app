@@ -20,7 +20,24 @@
     "search": "Rechercher",
     "close": "Fermer",
     "continue": "Continuer",
-    "or": "ou"
+    "or": "ou",
+    "confirm": "Confirmer",
+    "add": "Ajouter",
+    "create": "Créer",
+    "actions": "Actions",
+    "view": "Voir",
+    "all": "Tous",
+    "none": "Aucun",
+    "optional": "(optionnel)",
+    "from": "Du",
+    "to": "Au",
+    "date": "Date",
+    "time": "Heure",
+    "amount": "Montant",
+    "status": "Statut",
+    "noop": "Aucun résultat",
+    "no_results": "Aucun résultat à afficher.",
+    "empty": "Rien à afficher."
   },
   "roles": {
     "STUDENT": "Étudiant",
@@ -33,6 +50,30 @@
     "DOMICILE": "À domicile",
     "LOCAL": "Au local"
   },
+  "level": {
+    "PRIMAIRE": "Primaire",
+    "COLLEGE": "Collège",
+    "LYCEE": "Lycée",
+    "SUPERIEUR": "Supérieur"
+  },
+  "weekday": {
+    "0": "Lundi",
+    "1": "Mardi",
+    "2": "Mercredi",
+    "3": "Jeudi",
+    "4": "Vendredi",
+    "5": "Samedi",
+    "6": "Dimanche"
+  },
+  "weekday_short": {
+    "0": "Lun",
+    "1": "Mar",
+    "2": "Mer",
+    "3": "Jeu",
+    "4": "Ven",
+    "5": "Sam",
+    "6": "Dim"
+  },
   "nav": {
     "dashboard": "Tableau de bord",
     "bookings": "Mes réservations",
@@ -41,6 +82,7 @@
     "wallet": "Mon solde",
     "chat": "Messagerie",
     "profile": "Mon profil",
+    "discover": "Trouver un prof",
     "validations": "Validations profs",
     "topups": "Recharges",
     "payouts": "Virements",
@@ -135,6 +177,11 @@
     "EXTERNAL_DEPENDENCY_FAILURE": "Service externe indisponible. Réessayez plus tard.",
     "INTERNAL_ERROR": "Une erreur est survenue. Réessayez.",
     "NETWORK_ERROR": "Pas de connexion au serveur.",
+    "BOOKING_INSUFFICIENT_BALANCE": "Solde insuffisant pour effectuer cette réservation.",
+    "BOOKING_SLOT_UNAVAILABLE": "Ce créneau n'est plus disponible.",
+    "BOOKING_INVALID_TRANSITION": "Cette action n'est pas autorisée à ce stade.",
+    "PROFILE_NOT_FOUND": "Profil introuvable.",
+    "PROFILE_PROF_NOT_VALIDATED": "Ce professeur n'est pas encore validé.",
     "generic": "Une erreur est survenue."
   },
   "landing": {
@@ -187,5 +234,250 @@
     "not_found_cta": "Retour à l'accueil",
     "forbidden_title": "Accès refusé",
     "forbidden_desc": "Votre rôle ne vous permet pas d'accéder à cette page."
+  },
+  "discover": {
+    "title": "Trouver un prof",
+    "subtitle": "Décrivez votre besoin : nous vous suggérons les profs les plus pertinents.",
+    "form": {
+      "subject": "Matière",
+      "subject_placeholder": "Ex : math, physique, anglais…",
+      "level": "Niveau",
+      "modality": "Format",
+      "budget": "Budget maximum (MAD / séance)",
+      "city": "Ville",
+      "day": "Jour préféré",
+      "duration": "Durée (minutes)",
+      "submit": "Rechercher des profs"
+    },
+    "results_title": "Résultats",
+    "score": "Score",
+    "rationale": "Pourquoi",
+    "view_profile": "Voir le profil",
+    "empty": "Aucun prof correspondant à vos filtres.",
+    "match_count": "{{count}} prof(s) trouvé(s)"
+  },
+  "profile": {
+    "rating_label": "{{stars}} ★ ({{count}} avis)",
+    "subjects": "Matières",
+    "modalities": "Formats",
+    "locations": "Lieux",
+    "bio": "Présentation",
+    "experience_years": "{{count}} ans d'expérience",
+    "no_bio": "Pas de présentation pour le moment.",
+    "book_cta": "Réserver une séance",
+    "rates_title": "Tarifs",
+    "packs_title": "Forfaits",
+    "no_rates": "Aucun tarif publié pour ce filtre.",
+    "no_packs": "Aucun forfait publié pour ce filtre."
+  },
+  "booking": {
+    "list_title": "Mes réservations",
+    "tabs": {
+      "upcoming": "À venir",
+      "past": "Terminées",
+      "cancelled": "Annulées"
+    },
+    "columns": {
+      "subject": "Matière",
+      "with": "Avec",
+      "when": "Quand",
+      "amount": "Montant",
+      "status": "Statut",
+      "student": "Élève"
+    },
+    "empty_upcoming": "Aucune réservation à venir.",
+    "empty_past": "Aucune séance terminée.",
+    "empty_cancelled": "Aucune annulation.",
+    "view": "Voir",
+    "detail_title": "Détail de la réservation",
+    "summary": "Récapitulatif",
+    "timeline": "Historique",
+    "price_breakdown": {
+      "base": "Prix de base",
+      "fee": "Commission plateforme",
+      "total": "Total",
+      "title": "Détail du prix"
+    },
+    "anti_bypass": "Les coordonnées seront disponibles après acceptation par le professeur.",
+    "actions": {
+      "cancel": "Annuler",
+      "confirm": "Confirmer la séance",
+      "dispute": "Ouvrir un litige",
+      "accept": "Accepter",
+      "decline": "Refuser",
+      "start": "Démarrer"
+    },
+    "status": {
+      "DEMANDEE": "Demandée",
+      "ACCEPTEE_PAR_PROF": "Acceptée",
+      "EN_COURS": "En cours",
+      "TERMINEE": "Terminée",
+      "CONFIRMEE": "Confirmée",
+      "ANNULEE": "Annulée",
+      "LITIGE": "En litige"
+    },
+    "create": {
+      "title": "Réserver une séance",
+      "step1": "Détails du cours",
+      "step2": "Choisir un créneau",
+      "step3": "Vérifier et confirmer",
+      "subject": "Matière",
+      "level": "Niveau",
+      "modality": "Format",
+      "duration": "Durée (minutes)",
+      "quote": "Calcul du prix…",
+      "no_slots": "Aucun créneau disponible pour ce filtre dans les 30 prochains jours.",
+      "pick_slot": "Sélectionnez un créneau",
+      "selected_slot": "Créneau choisi",
+      "submit": "Confirmer la réservation",
+      "success": "Réservation créée. Vous serez notifié dès qu'elle est acceptée."
+    },
+    "start_window_hint": "Disponible 15 min avant le début prévu.",
+    "cancel_dialog": {
+      "title": "Annuler cette réservation ?",
+      "reason": "Motif (optionnel)",
+      "confirm": "Confirmer l'annulation"
+    },
+    "decline_dialog": {
+      "title": "Refuser cette demande ?",
+      "reason": "Motif (optionnel)",
+      "confirm": "Confirmer le refus"
+    },
+    "dispute_dialog": {
+      "title": "Ouvrir un litige",
+      "cause": "Motif",
+      "evidence": "Pièces justificatives (URLs)",
+      "confirm": "Ouvrir le litige"
+    },
+    "confirm_dialog": {
+      "title": "Confirmer la séance",
+      "desc": "Confirmer libère le paiement vers le professeur. À ne faire que si la séance s'est bien déroulée.",
+      "confirm": "Confirmer"
+    }
+  },
+  "calendar": {
+    "title": "Mon calendrier",
+    "tabs": {
+      "rules": "Règles de disponibilité",
+      "slots": "Créneaux"
+    },
+    "rules": {
+      "title": "Règles",
+      "subtitle": "Définissez vos plages hebdomadaires ou ponctuelles. Les créneaux sont matérialisés à partir de ces règles.",
+      "add": "Ajouter une règle",
+      "edit": "Modifier la règle",
+      "recurrence": "Récurrence",
+      "WEEKLY": "Hebdomadaire",
+      "ONE_OFF": "Ponctuelle",
+      "day": "Jour de la semaine",
+      "date": "Date",
+      "start_time": "Heure de début",
+      "end_time": "Heure de fin",
+      "timezone": "Fuseau horaire",
+      "active": "Active",
+      "no_rules": "Aucune règle pour le moment."
+    },
+    "slots": {
+      "title": "Créneaux",
+      "generate": "Générer les créneaux",
+      "generated": "{{created}} créneaux créés, {{skipped}} ignorés.",
+      "filter_status": "Filtrer par statut",
+      "prev_week": "Semaine précédente",
+      "next_week": "Semaine suivante",
+      "today": "Cette semaine",
+      "no_slots": "Aucun créneau sur cette semaine.",
+      "block": "Bloquer",
+      "unblock": "Débloquer",
+      "block_dialog_title": "Gérer le créneau"
+    },
+    "status": {
+      "AVAILABLE": "Disponible",
+      "RESERVED_PENDING": "Réservé (en attente)",
+      "BOOKED": "Réservé",
+      "BLOCKED": "Bloqué"
+    }
+  },
+  "pricing": {
+    "title": "Mes tarifs",
+    "tabs": {
+      "rates": "Tarifs unitaires",
+      "packs": "Forfaits"
+    },
+    "rate": {
+      "add": "Ajouter un tarif",
+      "edit": "Modifier le tarif",
+      "subject": "Matière",
+      "level": "Niveau",
+      "modality": "Format",
+      "duration": "Durée (minutes)",
+      "day": "Jour",
+      "day_any": "Tous les jours",
+      "amount": "Prix par séance (MAD)",
+      "active": "Actif",
+      "no_rates": "Aucun tarif publié."
+    },
+    "pack": {
+      "add": "Ajouter un forfait",
+      "edit": "Modifier le forfait",
+      "sessions": "Nombre de séances",
+      "discount": "Remise (%)",
+      "total": "Prix total (MAD)",
+      "no_packs": "Aucun forfait publié."
+    },
+    "delete_confirm": "Supprimer définitivement ?"
+  },
+  "payment": {
+    "wallet_title": "Mon solde",
+    "balance_card": "Solde disponible",
+    "topup_cta": "Demander une recharge",
+    "payout_cta": "Demander un virement",
+    "history_title": "Historique",
+    "history_empty": "Aucune opération.",
+    "operation": {
+      "TOPUP": "Recharge",
+      "ESCROW_LOCK": "Réservation (séquestre)",
+      "ESCROW_RELEASE": "Libération vers prof",
+      "REFUND": "Remboursement",
+      "PAYOUT": "Virement",
+      "ADMIN_ADJUST": "Ajustement admin",
+      "ADMIN_CREDIT": "Crédit admin",
+      "ADMIN_DEBIT": "Débit admin"
+    },
+    "topup": {
+      "title": "Demander une recharge",
+      "amount": "Montant (MAD)",
+      "method": "Mode de paiement",
+      "method_CASHPLUS": "Cash Plus",
+      "method_BANK_TRANSFER": "Virement bancaire",
+      "method_WHATSAPP": "WhatsApp",
+      "method_OTHER": "Autre",
+      "proof": "Lien de preuve (reçu, capture, …)",
+      "proof_hint": "L'upload de fichier arrive en v2. Collez pour l'instant un lien public.",
+      "submit": "Envoyer la demande",
+      "list_title": "Mes recharges",
+      "list_empty": "Aucune recharge.",
+      "status": {
+        "EN_ATTENTE_ADMIN": "En attente",
+        "APPROVED": "Approuvée",
+        "MODIFIED": "Modifiée",
+        "REJECTED": "Rejetée"
+      },
+      "success": "Recharge envoyée. Vous serez notifié dès qu'elle est validée."
+    },
+    "payout": {
+      "title": "Demander un virement",
+      "amount": "Montant (MAD)",
+      "iban": "RIB / IBAN",
+      "submit": "Envoyer la demande",
+      "list_title": "Mes virements",
+      "list_empty": "Aucun virement.",
+      "status": {
+        "REQUESTED": "Demandé",
+        "APPROVED": "Approuvé",
+        "PAID": "Payé",
+        "REJECTED": "Rejeté"
+      },
+      "success": "Demande envoyée."
+    }
   }
 }

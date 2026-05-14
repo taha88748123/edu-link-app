@@ -20,7 +20,24 @@
     "search": "بحث",
     "close": "إغلاق",
     "continue": "متابعة",
-    "or": "أو"
+    "or": "أو",
+    "confirm": "تأكيد",
+    "add": "إضافة",
+    "create": "إنشاء",
+    "actions": "إجراءات",
+    "view": "عرض",
+    "all": "الكل",
+    "none": "لا شيء",
+    "optional": "(اختياري)",
+    "from": "من",
+    "to": "إلى",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "amount": "المبلغ",
+    "status": "الحالة",
+    "noop": "لا توجد نتائج",
+    "no_results": "لا توجد نتائج للعرض.",
+    "empty": "لا يوجد شيء للعرض."
   },
   "roles": {
     "STUDENT": "طالب",
@@ -33,6 +50,30 @@
     "DOMICILE": "في المنزل",
     "LOCAL": "في المركز"
   },
+  "level": {
+    "PRIMAIRE": "ابتدائي",
+    "COLLEGE": "إعدادي",
+    "LYCEE": "ثانوي",
+    "SUPERIEUR": "عالي"
+  },
+  "weekday": {
+    "0": "الإثنين",
+    "1": "الثلاثاء",
+    "2": "الأربعاء",
+    "3": "الخميس",
+    "4": "الجمعة",
+    "5": "السبت",
+    "6": "الأحد"
+  },
+  "weekday_short": {
+    "0": "إثن",
+    "1": "ثلا",
+    "2": "أرب",
+    "3": "خمي",
+    "4": "جمع",
+    "5": "سبت",
+    "6": "أحد"
+  },
   "nav": {
     "dashboard": "لوحة التحكم",
     "bookings": "حجوزاتي",
@@ -41,6 +82,7 @@
     "wallet": "رصيدي",
     "chat": "الرسائل",
     "profile": "ملفي",
+    "discover": "ابحث عن أستاذ",
     "validations": "المصادقة على الأساتذة",
     "topups": "تعبئات الرصيد",
     "payouts": "التحويلات",
@@ -135,6 +177,11 @@
     "EXTERNAL_DEPENDENCY_FAILURE": "خدمة خارجية غير متاحة. حاول لاحقاً.",
     "INTERNAL_ERROR": "حدث خطأ. حاول مجدداً.",
     "NETWORK_ERROR": "لا اتصال بالخادم.",
+    "BOOKING_INSUFFICIENT_BALANCE": "رصيد غير كافٍ لإتمام الحجز.",
+    "BOOKING_SLOT_UNAVAILABLE": "هذا الموعد لم يعد متاحاً.",
+    "BOOKING_INVALID_TRANSITION": "غير مسموح بهذا الإجراء في هذه المرحلة.",
+    "PROFILE_NOT_FOUND": "الملف الشخصي غير موجود.",
+    "PROFILE_PROF_NOT_VALIDATED": "هذا الأستاذ لم يتم اعتماده بعد.",
     "generic": "حدث خطأ ما."
   },
   "landing": {
@@ -187,5 +234,250 @@
     "not_found_cta": "العودة إلى الرئيسية",
     "forbidden_title": "الوصول مرفوض",
     "forbidden_desc": "دورك لا يسمح بالوصول إلى هذه الصفحة."
+  },
+  "discover": {
+    "title": "ابحث عن أستاذ",
+    "subtitle": "صف ما تحتاجه: نقترح عليك أنسب الأساتذة.",
+    "form": {
+      "subject": "المادة",
+      "subject_placeholder": "مثال: رياضيات، فيزياء، إنجليزية…",
+      "level": "المستوى",
+      "modality": "الصيغة",
+      "budget": "الميزانية القصوى (درهم / حصة)",
+      "city": "المدينة",
+      "day": "اليوم المفضل",
+      "duration": "المدة (دقائق)",
+      "submit": "ابحث عن أساتذة"
+    },
+    "results_title": "النتائج",
+    "score": "النتيجة",
+    "rationale": "السبب",
+    "view_profile": "عرض الملف",
+    "empty": "لا يوجد أستاذ يطابق معاييرك.",
+    "match_count": "تم العثور على {{count}} أستاذ"
+  },
+  "profile": {
+    "rating_label": "{{stars}} ★ ({{count}} تقييم)",
+    "subjects": "المواد",
+    "modalities": "الصيغ",
+    "locations": "الأماكن",
+    "bio": "تعريف",
+    "experience_years": "{{count}} سنوات خبرة",
+    "no_bio": "لا يوجد تعريف بعد.",
+    "book_cta": "حجز حصة",
+    "rates_title": "الأسعار",
+    "packs_title": "الباقات",
+    "no_rates": "لا توجد أسعار منشورة لهذا الفلتر.",
+    "no_packs": "لا توجد باقات منشورة لهذا الفلتر."
+  },
+  "booking": {
+    "list_title": "حجوزاتي",
+    "tabs": {
+      "upcoming": "القادمة",
+      "past": "المنجزة",
+      "cancelled": "الملغاة"
+    },
+    "columns": {
+      "subject": "المادة",
+      "with": "مع",
+      "when": "متى",
+      "amount": "المبلغ",
+      "status": "الحالة",
+      "student": "الطالب"
+    },
+    "empty_upcoming": "لا توجد حجوزات قادمة.",
+    "empty_past": "لا توجد حصص منجزة.",
+    "empty_cancelled": "لا توجد إلغاءات.",
+    "view": "عرض",
+    "detail_title": "تفاصيل الحجز",
+    "summary": "الملخص",
+    "timeline": "السجل",
+    "price_breakdown": {
+      "base": "السعر الأساسي",
+      "fee": "عمولة المنصة",
+      "total": "المجموع",
+      "title": "تفاصيل السعر"
+    },
+    "anti_bypass": "ستتاح بيانات الاتصال بعد قبول الأستاذ للحجز.",
+    "actions": {
+      "cancel": "إلغاء",
+      "confirm": "تأكيد الحصة",
+      "dispute": "فتح نزاع",
+      "accept": "قبول",
+      "decline": "رفض",
+      "start": "بدء"
+    },
+    "status": {
+      "DEMANDEE": "مطلوب",
+      "ACCEPTEE_PAR_PROF": "مقبول",
+      "EN_COURS": "جارٍ",
+      "TERMINEE": "منتهي",
+      "CONFIRMEE": "مؤكد",
+      "ANNULEE": "ملغى",
+      "LITIGE": "في نزاع"
+    },
+    "create": {
+      "title": "حجز حصة",
+      "step1": "تفاصيل الدرس",
+      "step2": "اختر الموعد",
+      "step3": "مراجعة وتأكيد",
+      "subject": "المادة",
+      "level": "المستوى",
+      "modality": "الصيغة",
+      "duration": "المدة (دقائق)",
+      "quote": "حساب السعر…",
+      "no_slots": "لا توجد مواعيد متاحة لهذا الفلتر خلال 30 يوماً.",
+      "pick_slot": "اختر موعداً",
+      "selected_slot": "الموعد المختار",
+      "submit": "تأكيد الحجز",
+      "success": "تم إنشاء الحجز. سيتم إعلامك عند قبوله."
+    },
+    "start_window_hint": "متاح قبل 15 دقيقة من الموعد.",
+    "cancel_dialog": {
+      "title": "إلغاء هذا الحجز؟",
+      "reason": "السبب (اختياري)",
+      "confirm": "تأكيد الإلغاء"
+    },
+    "decline_dialog": {
+      "title": "رفض هذا الطلب؟",
+      "reason": "السبب (اختياري)",
+      "confirm": "تأكيد الرفض"
+    },
+    "dispute_dialog": {
+      "title": "فتح نزاع",
+      "cause": "السبب",
+      "evidence": "روابط الأدلة",
+      "confirm": "فتح النزاع"
+    },
+    "confirm_dialog": {
+      "title": "تأكيد الحصة",
+      "desc": "التأكيد يحرر الدفع إلى الأستاذ. لا تؤكد إلا إذا تمت الحصة كما يجب.",
+      "confirm": "تأكيد"
+    }
+  },
+  "calendar": {
+    "title": "أجندتي",
+    "tabs": {
+      "rules": "قواعد التوفر",
+      "slots": "المواعيد"
+    },
+    "rules": {
+      "title": "القواعد",
+      "subtitle": "حدد فترات توفرك الأسبوعية أو الخاصة. المواعيد تُولَّد من هذه القواعد.",
+      "add": "إضافة قاعدة",
+      "edit": "تعديل القاعدة",
+      "recurrence": "التكرار",
+      "WEEKLY": "أسبوعي",
+      "ONE_OFF": "مرة واحدة",
+      "day": "يوم الأسبوع",
+      "date": "التاريخ",
+      "start_time": "وقت البداية",
+      "end_time": "وقت النهاية",
+      "timezone": "المنطقة الزمنية",
+      "active": "نشطة",
+      "no_rules": "لا توجد قواعد حالياً."
+    },
+    "slots": {
+      "title": "المواعيد",
+      "generate": "توليد المواعيد",
+      "generated": "تم إنشاء {{created}} موعد، تخطي {{skipped}}.",
+      "filter_status": "فلترة بالحالة",
+      "prev_week": "الأسبوع السابق",
+      "next_week": "الأسبوع التالي",
+      "today": "هذا الأسبوع",
+      "no_slots": "لا توجد مواعيد لهذا الأسبوع.",
+      "block": "حجب",
+      "unblock": "رفع الحجب",
+      "block_dialog_title": "إدارة الموعد"
+    },
+    "status": {
+      "AVAILABLE": "متاح",
+      "RESERVED_PENDING": "محجوز مؤقتاً",
+      "BOOKED": "محجوز",
+      "BLOCKED": "محجوب"
+    }
+  },
+  "pricing": {
+    "title": "أسعاري",
+    "tabs": {
+      "rates": "الأسعار الفردية",
+      "packs": "الباقات"
+    },
+    "rate": {
+      "add": "إضافة سعر",
+      "edit": "تعديل السعر",
+      "subject": "المادة",
+      "level": "المستوى",
+      "modality": "الصيغة",
+      "duration": "المدة (دقائق)",
+      "day": "اليوم",
+      "day_any": "كل الأيام",
+      "amount": "السعر لكل حصة (درهم)",
+      "active": "نشط",
+      "no_rates": "لا توجد أسعار منشورة."
+    },
+    "pack": {
+      "add": "إضافة باقة",
+      "edit": "تعديل الباقة",
+      "sessions": "عدد الحصص",
+      "discount": "الخصم (%)",
+      "total": "السعر الإجمالي (درهم)",
+      "no_packs": "لا توجد باقات منشورة."
+    },
+    "delete_confirm": "حذف نهائي؟"
+  },
+  "payment": {
+    "wallet_title": "رصيدي",
+    "balance_card": "الرصيد المتاح",
+    "topup_cta": "طلب تعبئة",
+    "payout_cta": "طلب تحويل",
+    "history_title": "السجل",
+    "history_empty": "لا توجد عمليات.",
+    "operation": {
+      "TOPUP": "تعبئة",
+      "ESCROW_LOCK": "حجز (ضمان)",
+      "ESCROW_RELEASE": "تحرير إلى الأستاذ",
+      "REFUND": "استرداد",
+      "PAYOUT": "تحويل",
+      "ADMIN_ADJUST": "تعديل إداري",
+      "ADMIN_CREDIT": "ائتمان إداري",
+      "ADMIN_DEBIT": "خصم إداري"
+    },
+    "topup": {
+      "title": "طلب تعبئة",
+      "amount": "المبلغ (درهم)",
+      "method": "طريقة الدفع",
+      "method_CASHPLUS": "كاش بلوس",
+      "method_BANK_TRANSFER": "تحويل بنكي",
+      "method_WHATSAPP": "واتساب",
+      "method_OTHER": "أخرى",
+      "proof": "رابط الإثبات (إيصال، صورة، …)",
+      "proof_hint": "رفع الملف سيتوفر في الإصدار الثاني. ألصق رابطاً عمومياً الآن.",
+      "submit": "إرسال الطلب",
+      "list_title": "تعبئاتي",
+      "list_empty": "لا توجد تعبئات.",
+      "status": {
+        "EN_ATTENTE_ADMIN": "في الانتظار",
+        "APPROVED": "موافق عليها",
+        "MODIFIED": "معدلة",
+        "REJECTED": "مرفوضة"
+      },
+      "success": "تم إرسال التعبئة. ستتم إعلامك عند المصادقة."
+    },
+    "payout": {
+      "title": "طلب تحويل",
+      "amount": "المبلغ (درهم)",
+      "iban": "RIB / IBAN",
+      "submit": "إرسال الطلب",
+      "list_title": "تحويلاتي",
+      "list_empty": "لا توجد تحويلات.",
+      "status": {
+        "REQUESTED": "مطلوب",
+        "APPROVED": "موافق عليه",
+        "PAID": "مدفوع",
+        "REJECTED": "مرفوض"
+      },
+      "success": "تم إرسال الطلب."
+    }
   }
 }

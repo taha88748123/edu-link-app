@@ -15,7 +15,20 @@ import PasswordResetRequestPage from './pages/public/PasswordResetRequestPage';
 import PasswordResetConfirmPage from './pages/public/PasswordResetConfirmPage';
 
 import StudentDashboardPage from './pages/protected/student/StudentDashboardPage';
+import DiscoverPage from './pages/protected/student/DiscoverPage';
+import ProfPublicPage from './pages/protected/student/ProfPublicPage';
+import BookingCreatePage from './pages/protected/student/BookingCreatePage';
+import WalletPage from './pages/protected/student/WalletPage';
+import TopupsPage from './pages/protected/student/TopupsPage';
+
 import ProfDashboardPage from './pages/protected/prof/ProfDashboardPage';
+import CalendarPage from './pages/protected/prof/CalendarPage';
+import PricingPage from './pages/protected/prof/PricingPage';
+import ProfWalletPage from './pages/protected/prof/ProfWalletPage';
+
+import BookingsListPage from './pages/protected/bookings/BookingsListPage';
+import BookingDetailPage from './pages/protected/bookings/BookingDetailPage';
+
 import AdminDashboardPage from './pages/protected/admin/AdminDashboardPage';
 import NotFoundPage from './pages/protected/NotFoundPage';
 import ForbiddenPage from './pages/protected/ForbiddenPage';
@@ -79,6 +92,7 @@ export const router = createBrowserRouter([
           </RequireAuth>
         ),
         children: [
+          // STUDENT (and PARENT) routes
           {
             path: '/student',
             element: (
@@ -88,6 +102,64 @@ export const router = createBrowserRouter([
             ),
           },
           {
+            path: '/student/discover',
+            element: (
+              <RequireRole allow={['STUDENT', 'PARENT']}>
+                <DiscoverPage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/student/profs/:profId',
+            element: (
+              <RequireRole allow={['STUDENT', 'PARENT']}>
+                <ProfPublicPage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/student/profs/:profId/book',
+            element: (
+              <RequireRole allow={['STUDENT', 'PARENT']}>
+                <BookingCreatePage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/student/bookings',
+            element: (
+              <RequireRole allow={['STUDENT', 'PARENT']}>
+                <BookingsListPage basePath="/student" />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/student/bookings/:id',
+            element: (
+              <RequireRole allow={['STUDENT', 'PARENT']}>
+                <BookingDetailPage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/student/wallet',
+            element: (
+              <RequireRole allow={['STUDENT', 'PARENT']}>
+                <WalletPage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/student/topups',
+            element: (
+              <RequireRole allow={['STUDENT', 'PARENT']}>
+                <TopupsPage />
+              </RequireRole>
+            ),
+          },
+
+          // PROF routes
+          {
             path: '/prof',
             element: (
               <RequireRole allow={['PROF']}>
@@ -96,6 +168,48 @@ export const router = createBrowserRouter([
             ),
           },
           {
+            path: '/prof/calendar',
+            element: (
+              <RequireRole allow={['PROF']}>
+                <CalendarPage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/prof/pricing',
+            element: (
+              <RequireRole allow={['PROF']}>
+                <PricingPage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/prof/bookings',
+            element: (
+              <RequireRole allow={['PROF']}>
+                <BookingsListPage basePath="/prof" />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/prof/bookings/:id',
+            element: (
+              <RequireRole allow={['PROF']}>
+                <BookingDetailPage />
+              </RequireRole>
+            ),
+          },
+          {
+            path: '/prof/wallet',
+            element: (
+              <RequireRole allow={['PROF']}>
+                <ProfWalletPage />
+              </RequireRole>
+            ),
+          },
+
+          // ADMIN routes (placeholder for now)
+          {
             path: '/admin',
             element: (
               <RequireRole allow={['ADMIN']}>
@@ -103,6 +217,7 @@ export const router = createBrowserRouter([
               </RequireRole>
             ),
           },
+
           { path: '/forbidden', element: <ForbiddenPage /> },
         ],
       },
