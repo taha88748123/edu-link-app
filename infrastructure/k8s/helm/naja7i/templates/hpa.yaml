@@ -1,0 +1,54 @@
+{{- $root := . -}}
+{{- range $name, $cfg := .Values.services }}
+{{- if and $cfg.hpa $cfg.hpa.enabled }}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ $name }}
+  namespace: {{ $root.Release.Namespace }}
+  labels:
+    {{- include "naja7i.componentLabels" (dict "root" $root "name" $name) | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ $name }}
+  minReplicas: {{ $cfg.hpa.minReplicas | default 2 }}
+  maxReplicas: {{ $cfg.hpa.maxReplicas | default 8 }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ $cfg.hpa.targetCPU | default 70 }}
+{{- end }}
+{{- end }}
+
+{{- with index .Values "frontend-web" }}
+{{- if and .hpa .hpa.enabled }}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: frontend-web
+  namespace: {{ $root.Release.Namespace }}
+  labels:
+    {{- include "naja7i.componentLabels" (dict "root" $root "name" "frontend-web") | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: frontend-web
+  minReplicas: {{ .hpa.minReplicas | default 2 }}
+  maxReplicas: {{ .hpa.maxReplicas | default 6 }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .hpa.targetCPU | default 70 }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,65 @@
+# =============================================================================
+# PROD overrides — managed everything, HPA on, PDB on critical svcs, TLS prod.
+#
+# Prerequisites (all out-of-band):
+#   * Managed Postgres (RDS / Cloud SQL) reachable as `postgres-postgresql`
+#     (override `commonConfig.POSTGRES_HOST` or the service `SPRING_DATASOURCE_URL`s).
+#   * Managed Kafka (MSK / Confluent Cloud).
+#   * Managed Redis (ElastiCache / Memorystore).
+#   * Managed object store (S3 / GCS) — adjust MINIO_ENDPOINT.
+#   * `naja7i-secrets` Secret pre-applied via sealed-secrets.
+# =============================================================================
+global:
+  imageTag: "0.1.0"
+  domain: naja7i.ma
+  apiDomain: api.naja7i.ma
+
+# All HPA enabled (defined in values.yaml already); replicas obey HPA min.
+services:
+  config-server:        { replicas: 1 }
+  service-discovery:    { replicas: 2, pdb: { enabled: true, minAvailable: 1 } }
+  api-gateway:          { replicas: 2, hpa: { enabled: true, minReplicas: 2, maxReplicas: 8,  targetCPU: 70 }, pdb: { enabled: true, minAvailable: 1 } }
+  auth-service:         { replicas: 2, hpa: { enabled: true, minReplicas: 2, maxReplicas: 6,  targetCPU: 70 }, pdb: { enabled: true, minAvailable: 1 } }
+  user-profile-service: { replicas: 2, hpa: { enabled: true, minReplicas: 2, maxReplicas: 6,  targetCPU: 70 } }
+  calendar-service:     { replicas: 2, hpa: { enabled: true, minReplicas: 1, maxReplicas: 4,  targetCPU: 75 } }
+  pricing-service:      { replicas: 2, hpa: { enabled: true, minReplicas: 1, maxReplicas: 4,  targetCPU: 75 } }
+  booking-service:      { replicas: 2, hpa: { enabled: true, minReplicas: 2, maxReplicas: 6,  targetCPU: 70 } }
+  payment-service:      { replicas: 2, hpa: { enabled: true, minReplicas: 2, maxReplicas: 8,  targetCPU: 65 }, pdb: { enabled: true, minAvailable: 1 } }
+  chat-service:         { replicas: 2, hpa: { enabled: true, minReplicas: 2, maxReplicas: 6,  targetCPU: 70 } }
+  video-session-service: { replicas: 2, hpa: { enabled: true, minReplicas: 1, maxReplicas: 4,  targetCPU: 75 } }
+  ai-agent-service:     { replicas: 2, hpa: { enabled: true, minReplicas: 1, maxReplicas: 4,  targetCPU: 75 } }
+  notification-service: { replicas: 2, hpa: { enabled: true, minReplicas: 2, maxReplicas: 6,  targetCPU: 70 } }
+
+frontend-web:
+  replicas: 2
+  hpa: { enabled: true, minReplicas: 2, maxReplicas: 6, targetCPU: 70 }
+
+# All infra subcharts DISABLED — managed.
+postgres:  { enabled: false }
+mongodb:   { enabled: false }
+redis:     { enabled: false }
+kafka:     { enabled: false }
+minio:     { enabled: false }
+
+# Let's Encrypt PRODUCTION
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  tls:
+    enabled: true
+    secretName: naja7i-tls
+  hosts:
+    frontend: naja7i.ma
+    api: api.naja7i.ma
+
+networkPolicy:
+  enabled: true
+
+# Prod MUST use sealed-secrets — placeholder Secret disabled.
+placeholderSecret:
+  enabled: false

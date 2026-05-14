@@ -1,0 +1,36 @@
+{{- $root := . -}}
+{{- range $name, $cfg := .Values.services }}
+{{- if and $cfg.pdb $cfg.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ $name }}
+  namespace: {{ $root.Release.Namespace }}
+  labels:
+    {{- include "naja7i.componentLabels" (dict "root" $root "name" $name) | nindent 4 }}
+spec:
+  minAvailable: {{ $cfg.pdb.minAvailable | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "naja7i.componentSelectorLabels" (dict "root" $root "name" $name) | nindent 6 }}
+{{- end }}
+{{- end }}
+
+{{- with index .Values "frontend-web" }}
+{{- if and .pdb .pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: frontend-web
+  namespace: {{ $root.Release.Namespace }}
+  labels:
+    {{- include "naja7i.componentLabels" (dict "root" $root "name" "frontend-web") | nindent 4 }}
+spec:
+  minAvailable: {{ .pdb.minAvailable | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "naja7i.componentSelectorLabels" (dict "root" $root "name" "frontend-web") | nindent 6 }}
+{{- end }}
+{{- end }}

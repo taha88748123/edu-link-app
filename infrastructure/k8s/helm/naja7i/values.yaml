@@ -1,0 +1,490 @@
+# =============================================================================
+# NAJA7I umbrella chart — production-ish DEFAULT values.
+# Override per environment via values-dev.yaml / values-staging.yaml / values-prod.yaml.
+# =============================================================================
+
+# ---- Globals -----------------------------------------------------------------
+global:
+  imageRegistry: ""                      # leave empty; pull from default registry
+  imagePullSecrets: []
+  imageTag: "0.1.0"                      # overridden by CI to git-sha
+  storageClass: ""                       # cluster default
+  jwt:
+    existingSecret: naja7i-secrets       # references sealed-secret created out-of-band
+    secretKey: jwt-secret
+  internalKey:
+    existingSecret: naja7i-secrets
+    secretKey: internal-key
+  domain: naja7i.local                   # frontend hostname — overridden per env
+  apiDomain: api.naja7i.local            # gateway hostname
+
+# ---- ServiceAccount ----------------------------------------------------------
+serviceAccount:
+  create: true
+  name: naja7i
+  annotations: {}
+
+# ---- Common pod settings -----------------------------------------------------
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: [ALL]
+  readOnlyRootFilesystem: false          # Spring Boot + Flyway need writable tmp
+
+# ---- Common configmap entries (non-secret) -----------------------------------
+# Mounted into every backend service via envFrom: configMapRef.
+commonConfig:
+  TZ: Africa/Casablanca
+  SPRING_PROFILES_ACTIVE: docker
+  SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+  KAFKA_BOOTSTRAP: kafka:9092
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  REDIS_HOST: redis-master
+  REDIS_PORT: "6379"
+  POSTGRES_HOST: postgres-postgresql
+  POSTGRES_PORT: "5432"
+  MINIO_ENDPOINT: http://minio:9000
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4318/v1/traces
+
+# =============================================================================
+# Service map — every entry produces a Deployment + Service.
+# Add hpa.enabled=true on an entry to opt-in to HPA.
+# Add pdb.enabled=true to create a PodDisruptionBudget.
+# =============================================================================
+services:
+
+  # ---- Platform ---------------------------------------------------------------
+  config-server:
+    image: naja7i/config-server
+    port: 8888
+    replicas: 1
+    resources:
+      requests: { cpu: 100m, memory: 256Mi }
+      limits:   { cpu: 500m, memory: 512Mi }
+    probes:
+      path: /actuator/health
+      initialDelaySec: 30
+    env:
+      SPRING_PROFILES_ACTIVE: docker
+    hpa: { enabled: false }
+    pdb: { enabled: false }
+
+  service-discovery:
+    image: naja7i/service-discovery
+    port: 8761
+    replicas: 1                          # Eureka in-memory; for HA you'd use 2+
+    resources:
+      requests: { cpu: 100m, memory: 256Mi }
+      limits:   { cpu: 500m, memory: 512Mi }
+    probes:
+      path: /actuator/health
+      initialDelaySec: 30
+    env:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+    hpa: { enabled: false }
+    pdb: { enabled: false }
+
+  api-gateway:
+    image: naja7i/api-gateway
+    port: 8080
+    replicas: 2
+    resources:
+      requests: { cpu: 200m, memory: 512Mi }
+      limits:   { cpu: 1000m, memory: 1Gi }
+    hpa:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 8
+      targetCPU: 70
+    pdb:
+      enabled: true
+      minAvailable: 1
+    probes:
+      path: /actuator/health
+      initialDelaySec: 30
+    env:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+    envFromSecrets:
+      - { name: NAJA7I_JWT_SECRET, secretName: naja7i-secrets, key: jwt-secret }
+
+  # ---- Phase 1 microservices --------------------------------------------------
+  auth-service:
+    image: naja7i/auth-service
+    port: 8101
+    replicas: 2
+    resources:
+      requests: { cpu: 200m, memory: 512Mi }
+      limits:   { cpu: 1000m, memory: 1Gi }
+    hpa: { enabled: true, minReplicas: 2, maxReplicas: 6, targetCPU: 70 }
+    pdb: { enabled: true, minAvailable: 1 }
+    probes:
+      path: /actuator/health
+      initialDelaySec: 60
+    env:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-postgresql:5432/auth_db
+      SPRING_DATASOURCE_USERNAME: naja7i
+      REDIS_HOST: redis-master
+      KAFKA_BOOTSTRAP: kafka:9092
+    envFromSecrets:
+      - { name: SPRING_DATASOURCE_PASSWORD, secretName: naja7i-secrets, key: postgres-password }
+      - { name: NAJA7I_JWT_SECRET, secretName: naja7i-secrets, key: jwt-secret }
+
+  user-profile-service:
+    image: naja7i/user-profile-service
+    port: 8102
+    replicas: 2
+    resources:
+      requests: { cpu: 150m, memory: 384Mi }
+      limits:   { cpu: 750m, memory: 768Mi }
+    hpa: { enabled: true, minReplicas: 2, maxReplicas: 6, targetCPU: 70 }
+    pdb: { enabled: false }
+    probes:
+      path: /actuator/health
+      initialDelaySec: 60
+    env:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-postgresql:5432/profile_db
+      SPRING_DATASOURCE_USERNAME: naja7i
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: naja7i
+      MINIO_BUCKET: naja7i-profiles
+    envFromSecrets:
+      - { name: SPRING_DATASOURCE_PASSWORD, secretName: naja7i-secrets, key: postgres-password }
+      - { name: MINIO_SECRET_KEY,           secretName: naja7i-secrets, key: minio-password }
+
+  calendar-service:
+    image: naja7i/calendar-service
+    port: 8103
+    replicas: 1
+    resources:
+      requests: { cpu: 150m, memory: 384Mi }
+      limits:   { cpu: 750m, memory: 768Mi }
+    hpa: { enabled: true, minReplicas: 1, maxReplicas: 4, targetCPU: 75 }
+    pdb: { enabled: false }
+    probes:
+      path: /actuator/health
+      initialDelaySec: 60
+    env:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-postgresql:5432/calendar_db
+      SPRING_DATASOURCE_USERNAME: naja7i
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    envFromSecrets:
+      - { name: SPRING_DATASOURCE_PASSWORD, secretName: naja7i-secrets, key: postgres-password }
+      - { name: NAJA7I_INTERNAL_KEY,        secretName: naja7i-secrets, key: internal-key }
+
+  pricing-service:
+    image: naja7i/pricing-service
+    port: 8104
+    replicas: 1
+    resources:
+      requests: { cpu: 150m, memory: 384Mi }
+      limits:   { cpu: 750m, memory: 768Mi }
+    hpa: { enabled: true, minReplicas: 1, maxReplicas: 4, targetCPU: 75 }
+    pdb: { enabled: false }
+    probes:
+      path: /actuator/health
+      initialDelaySec: 60
+    env:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-postgresql:5432/pricing_db
+      SPRING_DATASOURCE_USERNAME: naja7i
+    envFromSecrets:
+      - { name: SPRING_DATASOURCE_PASSWORD, secretName: naja7i-secrets, key: postgres-password }
+      - { name: NAJA7I_INTERNAL_KEY,        secretName: naja7i-secrets, key: internal-key }
+
+  booking-service:
+    image: naja7i/booking-service
+    port: 8105
+    replicas: 2
+    resources:
+      requests: { cpu: 200m, memory: 512Mi }
+      limits:   { cpu: 1000m, memory: 1Gi }
+    hpa: { enabled: true, minReplicas: 2, maxReplicas: 6, targetCPU: 70 }
+    pdb: { enabled: false }
+    probes:
+      path: /actuator/health
+      initialDelaySec: 75
+    env:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-postgresql:5432/booking_db
+      SPRING_DATASOURCE_USERNAME: naja7i
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    envFromSecrets:
+      - { name: SPRING_DATASOURCE_PASSWORD, secretName: naja7i-secrets, key: postgres-password }
+      - { name: NAJA7I_INTERNAL_KEY,        secretName: naja7i-secrets, key: internal-key }
+
+  payment-service:
+    image: naja7i/payment-service
+    port: 8106
+    replicas: 2
+    # Money-critical — higher floor + larger heap. Flyway + audit triggers on
+    # cold start take longer, hence the more generous initialDelaySec.
+    resources:
+      requests: { cpu: 300m, memory: 768Mi }
+      limits:   { cpu: 1500m, memory: 1536Mi }
+    hpa: { enabled: true, minReplicas: 2, maxReplicas: 8, targetCPU: 65 }
+    pdb:
+      enabled: true
+      minAvailable: 1
+    probes:
+      path: /actuator/health
+      initialDelaySec: 90
+    env:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-postgresql:5432/payment_db
+      SPRING_DATASOURCE_USERNAME: naja7i
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    envFromSecrets:
+      - { name: SPRING_DATASOURCE_PASSWORD, secretName: naja7i-secrets, key: postgres-password }
+
+  chat-service:
+    image: naja7i/chat-service
+    port: 8107
+    replicas: 2
+    resources:
+      requests: { cpu: 200m, memory: 512Mi }
+      limits:   { cpu: 1000m, memory: 1Gi }
+    hpa: { enabled: true, minReplicas: 2, maxReplicas: 6, targetCPU: 70 }
+    pdb: { enabled: false }
+    probes:
+      path: /actuator/health
+      initialDelaySec: 60
+    env:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATA_MONGODB_URI: mongodb://naja7i:$(MONGODB_PASSWORD)@mongodb:27017/chat_db?authSource=admin
+      REDIS_HOST: redis-master
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      NAJA7I_CHAT_MODERATION_DRIVER: logging
+    envFromSecrets:
+      - { name: MONGODB_PASSWORD,    secretName: naja7i-secrets, key: mongodb-password }
+      - { name: NAJA7I_INTERNAL_KEY, secretName: naja7i-secrets, key: internal-key }
+
+  video-session-service:
+    image: naja7i/video-session-service
+    port: 8108
+    replicas: 1
+    resources:
+      requests: { cpu: 150m, memory: 384Mi }
+      limits:   { cpu: 750m, memory: 768Mi }
+    hpa: { enabled: true, minReplicas: 1, maxReplicas: 4, targetCPU: 75 }
+    pdb: { enabled: false }
+    probes:
+      path: /actuator/health
+      initialDelaySec: 60
+    env:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-postgresql:5432/video_db
+      SPRING_DATASOURCE_USERNAME: naja7i
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    envFromSecrets:
+      - { name: SPRING_DATASOURCE_PASSWORD, secretName: naja7i-secrets, key: postgres-password }
+      - { name: LIVEKIT_API_SECRET,         secretName: naja7i-secrets, key: livekit-api-secret }
+
+  ai-agent-service:
+    image: naja7i/ai-agent-service
+    port: 8109
+    replicas: 1
+    resources:
+      requests: { cpu: 200m, memory: 512Mi }
+      limits:   { cpu: 1000m, memory: 1Gi }
+    hpa: { enabled: true, minReplicas: 1, maxReplicas: 4, targetCPU: 75 }
+    pdb: { enabled: false }
+    probes:
+      path: /actuator/health
+      initialDelaySec: 60
+    env:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-postgresql:5432/ai_db
+      SPRING_DATASOURCE_USERNAME: naja7i
+      REDIS_HOST: redis-master
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    envFromSecrets:
+      - { name: SPRING_DATASOURCE_PASSWORD, secretName: naja7i-secrets, key: postgres-password }
+      - { name: ANTHROPIC_API_KEY,          secretName: naja7i-secrets, key: anthropic-api-key }
+
+  notification-service:
+    image: naja7i/notification-service
+    port: 8111
+    replicas: 2
+    resources:
+      requests: { cpu: 150m, memory: 384Mi }
+      limits:   { cpu: 750m, memory: 768Mi }
+    hpa: { enabled: true, minReplicas: 2, maxReplicas: 6, targetCPU: 70 }
+    pdb: { enabled: false }
+    probes:
+      path: /actuator/health
+      initialDelaySec: 60
+    env:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      POSTGRES_HOST: postgres-postgresql
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: notification_db
+      POSTGRES_USER: naja7i
+      REDIS_HOST: redis-master
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SMTP_HOST: mailhog
+      SMTP_PORT: "1025"
+      NOTIF_SMS_DRIVER: logging
+      NOTIF_WA_DRIVER: logging
+      NOTIF_EMAIL_DRIVER: smtp
+      NOTIF_PUSH_DRIVER: logging
+    envFromSecrets:
+      - { name: POSTGRES_PASSWORD,   secretName: naja7i-secrets, key: postgres-password }
+      - { name: NAJA7I_INTERNAL_KEY, secretName: naja7i-secrets, key: internal-key }
+      - { name: SENDGRID_API_KEY,    secretName: naja7i-secrets, key: sendgrid-api-key }
+      - { name: TWILIO_AUTH_TOKEN,   secretName: naja7i-secrets, key: twilio-auth-token }
+
+# =============================================================================
+# Frontend (separate top-level key — different routing in Ingress)
+# =============================================================================
+frontend-web:
+  image: naja7i/frontend-web
+  port: 80
+  replicas: 2
+  resources:
+    requests: { cpu: 100m, memory: 128Mi }
+    limits:   { cpu: 500m, memory: 256Mi }
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPU: 70
+  pdb: { enabled: false }
+  probes:
+    path: /
+    initialDelaySec: 5
+
+# =============================================================================
+# Infra subcharts (toggle per env)
+#   In prod you typically set every one of these to false and use managed
+#   services (RDS, MSK, ElastiCache, S3, Atlas, ...).
+# =============================================================================
+postgres:
+  enabled: true
+  auth:
+    username: naja7i
+    existingSecret: naja7i-secrets
+    secretKeys:
+      adminPasswordKey: postgres-password
+      userPasswordKey: postgres-password
+    database: naja7i                     # init job/script creates per-service DBs
+  primary:
+    persistence:
+      size: 20Gi
+    initdb:
+      scriptsConfigMap: naja7i-postgres-init
+
+mongodb:
+  enabled: true
+  auth:
+    rootUser: naja7i
+    existingSecret: naja7i-secrets
+  persistence:
+    size: 10Gi
+
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      size: 5Gi
+
+kafka:
+  enabled: true
+  controller:
+    replicaCount: 1
+  broker:
+    replicaCount: 1
+  persistence:
+    size: 20Gi
+  listeners:
+    client:
+      protocol: PLAINTEXT
+
+minio:
+  enabled: true
+  auth:
+    rootUser: naja7i
+    existingSecret: naja7i-secrets
+  persistence:
+    size: 10Gi
+  defaultBuckets: "naja7i-profiles,naja7i-diplomas,naja7i-recordings,naja7i-payments"
+
+# =============================================================================
+# Ingress
+# =============================================================================
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/affinity: cookie         # sticky for WebSockets
+  tls:
+    enabled: true
+    secretName: naja7i-tls
+  hosts:
+    frontend: naja7i.local
+    api: api.naja7i.local
+
+# =============================================================================
+# NetworkPolicy
+# =============================================================================
+networkPolicy:
+  enabled: false                         # opt-in: cluster-disruptive on small clusters
+  ingressNamespace: ingress-nginx
+  observabilityNamespace: observability
+
+# =============================================================================
+# Placeholder secret (DEV ONLY — replace with sealed-secrets in prod)
+# =============================================================================
+placeholderSecret:
+  enabled: true
+  name: naja7i-secrets
+  data:
+    jwt-secret: "dev-only-secret-change-me-32+chars-required"
+    internal-key: "dev-internal-key"
+    postgres-password: "naja7i_dev"
+    mongodb-password: "naja7i_dev"
+    redis-password: ""
+    minio-password: "naja7i_dev_changeme"
+    anthropic-api-key: ""
+    twilio-auth-token: ""
+    sendgrid-api-key: ""
+    livekit-api-secret: ""
+    firebase-service-account-json: "{}"

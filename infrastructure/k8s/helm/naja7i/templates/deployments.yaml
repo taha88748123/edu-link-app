@@ -1,0 +1,134 @@
+{{- /*
+Iterates over .Values.services AND the top-level .Values "frontend-web" entry.
+Each entry → one Deployment + companion Service (services.yaml uses the same map).
+*/ -}}
+
+{{- $root := . -}}
+
+{{- /* All entries to render: services map + frontend-web (as its own item) */ -}}
+{{- range $name, $cfg := .Values.services }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  namespace: {{ $root.Release.Namespace }}
+  labels:
+    {{- include "naja7i.componentLabels" (dict "root" $root "name" $name) | nindent 4 }}
+spec:
+  replicas: {{ $cfg.replicas | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "naja7i.componentSelectorLabels" (dict "root" $root "name" $name) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "naja7i.componentSelectorLabels" (dict "root" $root "name" $name) | nindent 8 }}
+      annotations:
+        # Roll pods on configmap/secret hash change
+        checksum/config: {{ include (print $root.Template.BasePath "/configmap-common.yaml") $root | sha256sum }}
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: {{ $cfg.port | quote }}
+    spec:
+      serviceAccountName: {{ include "naja7i.serviceAccountName" $root }}
+      {{- with $root.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml $root.Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ $name }}
+          image: {{ include "naja7i.image" (dict "root" $root "svc" $cfg) }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ $cfg.port }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: naja7i-config-common
+          env:
+            {{- include "naja7i.envMap" (dict "data" ($cfg.env | default dict)) | nindent 12 }}
+            {{- if $cfg.envFromSecrets }}
+            {{- include "naja7i.envFromSecrets" (dict "items" $cfg.envFromSecrets) | nindent 12 }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: {{ $cfg.probes.path | default "/actuator/health" }}
+              port: http
+            initialDelaySeconds: {{ $cfg.probes.initialDelaySec | default 30 }}
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: {{ $cfg.probes.path | default "/actuator/health" }}
+              port: http
+            initialDelaySeconds: {{ $cfg.probes.initialDelaySec | default 30 }}
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            {{- toYaml $cfg.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml $root.Values.containerSecurityContext | nindent 12 }}
+{{- end }}
+
+{{- /* ---- frontend-web --------------------------------------------- */}}
+{{- with index .Values "frontend-web" }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-web
+  namespace: {{ $root.Release.Namespace }}
+  labels:
+    {{- include "naja7i.componentLabels" (dict "root" $root "name" "frontend-web") | nindent 4 }}
+spec:
+  replicas: {{ .replicas | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "naja7i.componentSelectorLabels" (dict "root" $root "name" "frontend-web") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "naja7i.componentSelectorLabels" (dict "root" $root "name" "frontend-web") | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "naja7i.serviceAccountName" $root }}
+      {{- with $root.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml $root.Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: frontend-web
+          image: {{ include "naja7i.image" (dict "root" $root "svc" .) }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ .port | default 80 }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .probes.path | default "/" }}
+              port: http
+            initialDelaySeconds: {{ .probes.initialDelaySec | default 5 }}
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: {{ .probes.path | default "/" }}
+              port: http
+            initialDelaySeconds: {{ .probes.initialDelaySec | default 5 }}
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            {{- toYaml .resources | nindent 12 }}
+          securityContext:
+            {{- toYaml $root.Values.containerSecurityContext | nindent 12 }}
+{{- end }}

@@ -1,0 +1,71 @@
+# =============================================================================
+# STAGING overrides — managed DB recommended, smaller resources, LE staging.
+#
+# NOTE for the staging engineer:
+#   The infra subcharts below are commented OFF (postgres / redis / kafka).
+#   You are expected to point the service env vars at AWS RDS / ElastiCache /
+#   MSK (or equivalents) before this chart will deploy successfully. Search for
+#   `postgres-postgresql` in values.yaml and override.
+# =============================================================================
+global:
+  imageTag: staging
+  domain: staging.naja7i.ma
+  apiDomain: api.staging.naja7i.ma
+
+# Replicas: gateway 2, others 1, payment always 2 (money-critical).
+services:
+  config-server:        { replicas: 1 }
+  service-discovery:    { replicas: 1 }
+  api-gateway:          { replicas: 2, hpa: { enabled: false } }
+  auth-service:         { replicas: 1, hpa: { enabled: false } }
+  user-profile-service: { replicas: 1, hpa: { enabled: false } }
+  calendar-service:     { replicas: 1, hpa: { enabled: false } }
+  pricing-service:      { replicas: 1, hpa: { enabled: false } }
+  booking-service:      { replicas: 1, hpa: { enabled: false } }
+  payment-service:      { replicas: 2, hpa: { enabled: false }, pdb: { enabled: true, minAvailable: 1 } }
+  chat-service:         { replicas: 1, hpa: { enabled: false } }
+  video-session-service: { replicas: 1, hpa: { enabled: false } }
+  ai-agent-service:     { replicas: 1, hpa: { enabled: false } }
+  notification-service: { replicas: 1, hpa: { enabled: false } }
+
+frontend-web:
+  replicas: 2
+  hpa: { enabled: false }
+
+# Use managed services in staging (see note above).
+postgres:
+  enabled: false
+mongodb:
+  enabled: true                          # mongo is often kept in-cluster in staging; flip to false to use Atlas
+  persistence:
+    size: 10Gi
+redis:
+  enabled: false
+kafka:
+  enabled: false
+minio:
+  enabled: true                          # MinIO in-cluster; flip to false to use S3
+  persistence:
+    size: 10Gi
+
+# Let's Encrypt STAGING — rate-limit-friendly for testing
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/affinity: cookie
+  tls:
+    enabled: true
+    secretName: naja7i-tls
+  hosts:
+    frontend: staging.naja7i.ma
+    api: api.staging.naja7i.ma
+
+networkPolicy:
+  enabled: true
+
+# Staging should use sealed-secrets — disable the plaintext placeholder.
+placeholderSecret:
+  enabled: false

@@ -1,0 +1,77 @@
+# =============================================================================
+# DEV overrides — single node cluster (kind / k3d / minikube).
+# All infra subcharts in-cluster; no TLS; no HPA / PDB / NetworkPolicy.
+# =============================================================================
+global:
+  imageTag: dev
+  domain: naja7i.localtest.me
+  apiDomain: api.naja7i.localtest.me
+
+# Single replicas everywhere
+services:
+  config-server:        { replicas: 1, hpa: { enabled: false }, pdb: { enabled: false } }
+  service-discovery:    { replicas: 1, hpa: { enabled: false }, pdb: { enabled: false } }
+  api-gateway:          { replicas: 1, hpa: { enabled: false }, pdb: { enabled: false } }
+  auth-service:         { replicas: 1, hpa: { enabled: false }, pdb: { enabled: false } }
+  user-profile-service: { replicas: 1, hpa: { enabled: false }, pdb: { enabled: false } }
+  calendar-service:     { replicas: 1, hpa: { enabled: false }, pdb: { enabled: false } }
+  pricing-service:      { replicas: 1, hpa: { enabled: false }, pdb: { enabled: false } }
+  booking-service:      { replicas: 1, hpa: { enabled: false }, pdb: { enabled: false } }
+  payment-service:      { replicas: 1, hpa: { enabled: false }, pdb: { enabled: false } }
+  chat-service:         { replicas: 1, hpa: { enabled: false }, pdb: { enabled: false } }
+  video-session-service: { replicas: 1, hpa: { enabled: false }, pdb: { enabled: false } }
+  ai-agent-service:     { replicas: 1, hpa: { enabled: false }, pdb: { enabled: false } }
+  notification-service: { replicas: 1, hpa: { enabled: false }, pdb: { enabled: false } }
+
+frontend-web:
+  replicas: 1
+  hpa: { enabled: false }
+
+# In-cluster infra, small disks
+postgres:
+  enabled: true
+  primary:
+    persistence:
+      size: 5Gi
+
+mongodb:
+  enabled: true
+  persistence:
+    size: 5Gi
+
+redis:
+  enabled: true
+  master:
+    persistence:
+      size: 2Gi
+
+kafka:
+  enabled: true
+  persistence:
+    size: 5Gi
+
+minio:
+  enabled: true
+  persistence:
+    size: 5Gi
+
+# No TLS in dev
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: ""
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/affinity: cookie
+  tls:
+    enabled: false
+  hosts:
+    frontend: naja7i.localtest.me
+    api: api.naja7i.localtest.me
+
+networkPolicy:
+  enabled: false
+
+# Default placeholder secret is fine for dev; sealed-secrets not required.
+placeholderSecret:
+  enabled: true

@@ -1,0 +1,40 @@
+{{- $root := . -}}
+{{- range $name, $cfg := .Values.services }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  namespace: {{ $root.Release.Namespace }}
+  labels:
+    {{- include "naja7i.componentLabels" (dict "root" $root "name" $name) | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "naja7i.componentSelectorLabels" (dict "root" $root "name" $name) | nindent 4 }}
+  ports:
+    - name: http
+      port: {{ $cfg.port }}
+      targetPort: http
+      protocol: TCP
+{{- end }}
+
+{{- with index .Values "frontend-web" }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-web
+  namespace: {{ $root.Release.Namespace }}
+  labels:
+    {{- include "naja7i.componentLabels" (dict "root" $root "name" "frontend-web") | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "naja7i.componentSelectorLabels" (dict "root" $root "name" "frontend-web") | nindent 4 }}
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+{{- end }}

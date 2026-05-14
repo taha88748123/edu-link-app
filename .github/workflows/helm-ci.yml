@@ -1,0 +1,73 @@
+name: helm-ci
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "infrastructure/k8s/**"
+      - ".github/workflows/helm-ci.yml"
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "infrastructure/k8s/**"
+      - ".github/workflows/helm-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-template:
+    name: helm lint + template (${{ matrix.env }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [dev, staging, prod]
+
+    env:
+      CHART_DIR: infrastructure/k8s/helm/naja7i
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.16.0
+
+      - name: Resolve subchart dependencies
+        working-directory: ${{ env.CHART_DIR }}
+        run: helm dependency update
+
+      - name: helm lint (${{ matrix.env }})
+        run: helm lint "${CHART_DIR}" -f "${CHART_DIR}/values-${{ matrix.env }}.yaml"
+
+      - name: helm template (${{ matrix.env }})
+        run: |
+          mkdir -p out
+          helm template naja7i "${CHART_DIR}" \
+            -f "${CHART_DIR}/values-${{ matrix.env }}.yaml" \
+            > "out/manifest-${{ matrix.env }}.yaml"
+
+      - name: Verify rendered manifests parse as YAML
+        env:
+          MANIFEST: out/manifest-${{ matrix.env }}.yaml
+        run: |
+          python3 - <<'PY'
+          import os, yaml, pathlib
+          path = pathlib.Path(os.environ["MANIFEST"])
+          docs = list(yaml.safe_load_all(path.read_text()))
+          non_empty = [d for d in docs if d]
+          print(f"Rendered {len(non_empty)} K8s documents from {path}")
+          if not non_empty:
+              raise SystemExit("Empty render — chart produced no manifests")
+          PY
+
+      - name: Upload rendered manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: helm-manifest-${{ matrix.env }}
+          path: out/manifest-${{ matrix.env }}.yaml
+          retention-days: 7

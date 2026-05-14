@@ -1,0 +1,15 @@
+{{- if .Values.postgres.enabled }}
+# Bitnami's `postgresql` subchart mounts every key in this ConfigMap into
+# /docker-entrypoint-initdb.d/ on the primary's first boot, creating the 11
+# per-service databases.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: naja7i-postgres-init
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "naja7i.labels" . | nindent 4 }}
+data:
+  init.sh: |
+{{ .Files.Get "files/postgres-init.sh" | indent 4 }}
+{{- end }}
