@@ -50,16 +50,33 @@ openssl rand -hex 32 | tr -d '\n' | sed 's/^/NAJA7I_JWT_SECRET=/' >> .env
 
 ### 3. Lancer
 
+Le projet utilise les **profiles Docker Compose** pour regrouper les services. 5 profiles disponibles : `infra` (Postgres/Mongo/Redis/Kafka/MinIO/Mailhog), `platform` (Eureka/Config/Gateway), `services` (10 microservices métier), `frontend` (nginx + React build), `observability` (Prometheus/Loki/Tempo/Grafana).
+
 ```bash
-# OPTION A : Tout en un coup (infra + plateforme + 10 microservices + frontend)
-make up
+# OPTION A — Tout en un coup (infra + plateforme + 10 microservices + frontend)
+docker compose \
+  --profile infra --profile platform --profile services --profile frontend \
+  up -d --build
 
-# OPTION B : Avec observabilité (Grafana + Loki + Tempo + Prometheus en plus)
-make up && make observability-up
+# OPTION B — Avec observabilité (Grafana + Loki + Tempo + Prometheus en plus)
+docker compose \
+  --profile infra --profile platform --profile services --profile frontend --profile observability \
+  up -d --build
 
-# OPTION C : Pour développer en hot-reload côté frontend
-make infra-up && make platform-up && make services-up
-make frontend-dev    # http://localhost:5173 avec HMR
+# OPTION C — Pour développer en hot-reload côté frontend (frontend hors Docker)
+docker compose --profile infra --profile platform --profile services up -d --build
+cd frontend-web && npm install && npm run dev      # http://localhost:5173 avec HMR
+```
+
+> **Astuce** : tape `PROFILES="--profile infra --profile platform --profile services --profile frontend"` une seule fois par session, puis `docker compose $PROFILES up -d --build` pour raccourcir. Sur Windows PowerShell : `$PROFILES = "--profile infra ..."` puis `docker compose $PROFILES.Split(' ') up -d --build`.
+
+**Commandes utiles** :
+```bash
+docker compose ps                             # état des containers
+docker compose logs -f --tail=100             # suivre les logs
+docker compose logs -f auth-service           # logs d'un seul service
+docker compose --profile infra --profile platform --profile services --profile frontend down   # tout arrêter
+docker compose down -v                        # arrêter ET supprimer les volumes (RAZ data)
 ```
 
 ### 4. Vérifier que ça tourne
@@ -149,7 +166,7 @@ edu-link-app/
 ├── README.md                # ce fichier
 ├── .env.example             # template des variables d'env
 ├── docker-compose.yml       # 5 profiles : infra · platform · services · frontend · observability
-├── Makefile                 # raccourcis (make help)
+├── Makefile                 # raccourcis optionnels (équivalent docker compose ...)
 ├── docs/
 │   ├── architecture/        # C4, data-flow, DB schemas, events catalog
 │   └── observability.md
@@ -180,10 +197,17 @@ cd backend && mvn -B clean verify
 # Frontend : 54 tests unit + typecheck + build
 cd frontend-web && npm run typecheck && npm test -- --run && npm run build
 
-# E2E : 5 golden paths Playwright (suppose make up déjà lancé)
-make e2e-install        # première fois
-NAJA7I_AUTH_TEST_MODE=true make up    # active le backdoor OTP
-make e2e
+# E2E : 5 golden paths Playwright (suppose la stack déjà lancée)
+cd frontend-web
+npm install
+npx playwright install --with-deps chromium      # première fois uniquement
+
+# Démarrer la stack avec le backdoor OTP activé (UNIQUEMENT pour les tests)
+NAJA7I_AUTH_TEST_MODE=true docker compose \
+  --profile infra --profile platform --profile services --profile frontend \
+  up -d --build
+
+npm run e2e
 ```
 
 Les 5 specs E2E :
@@ -201,18 +225,19 @@ Voir [`infrastructure/k8s/README.md`](infrastructure/k8s/README.md) pour le guid
 
 ```bash
 # Pré-requis : cluster K8s + ingress-nginx + cert-manager + sealed-secrets controller
-make helm-deps                                    # télécharge subcharts Bitnami
-make helm-lint                                    # validation YAML
+cd infrastructure/k8s/helm/naja7i
+helm dependency update                            # télécharge subcharts Bitnami
+helm lint . -f values-dev.yaml                    # validation YAML
 
 # Déploiement dev (in-cluster infra)
-helm upgrade --install naja7i infrastructure/k8s/helm/naja7i \
-  -f infrastructure/k8s/helm/naja7i/values-dev.yaml \
+helm upgrade --install naja7i . \
+  -f values-dev.yaml \
   -n naja7i --create-namespace
 
 # Prod : managed DB + HPA + PDB + NetworkPolicy + Let's Encrypt
 # 1. Seal les vrais secrets : kubeseal -f my-secrets.yaml > sealed.yaml
 # 2. Apply : kubectl apply -f sealed.yaml
-# 3. Deploy : helm ... -f values-prod.yaml
+# 3. Deploy : helm upgrade --install naja7i . -f values-prod.yaml
 ```
 
 ---
@@ -245,20 +270,41 @@ helm upgrade --install naja7i infrastructure/k8s/helm/naja7i \
 
 ---
 
-## 📚 Commandes Make utiles
+## 📚 Antisèche des commandes courantes
 
 ```bash
-make help              # liste toutes les cibles disponibles
-make up                # tout (infra + platform + services + frontend)
-make down              # tout arrêter
-make logs              # tail -f de tous les containers
-make ps                # état des containers
-make observability-up  # Grafana + Loki + Tempo + Prometheus
-make frontend-dev      # Vite dev server avec HMR
-make e2e               # lance les tests Playwright
-make helm-lint         # valide les charts Helm
-make test              # mvn clean verify (tous les tests backend)
+# ─── Stack complète ────────────────────────────────────────────────
+docker compose --profile infra --profile platform --profile services --profile frontend up -d --build
+docker compose --profile infra --profile platform --profile services --profile frontend down
+
+# ─── Observabilité seule (en plus de la stack) ─────────────────────
+docker compose --profile observability up -d
+# → Grafana : http://localhost:3000 (admin / admin)
+
+# ─── Logs ──────────────────────────────────────────────────────────
+docker compose logs -f --tail=100                  # tous
+docker compose logs -f payment-service             # un service précis
+
+# ─── Backend ───────────────────────────────────────────────────────
+cd backend && mvn -B clean install -DskipTests     # build tous les modules (sans tests)
+cd backend && mvn -B clean verify                  # build + tous les tests
+cd backend && mvn -B -pl payment-service -am verify  # un service + ses deps
+
+# ─── Frontend ──────────────────────────────────────────────────────
+cd frontend-web
+npm install                                        # première fois
+npm run dev                                        # serveur Vite HMR :5173
+npm run typecheck                                  # tsc --noEmit
+npm test -- --run                                  # vitest une seule passe
+npm run build                                      # build production
+npx playwright install --with-deps chromium        # première fois pour E2E
+npm run e2e                                        # lance les tests Playwright
+
+# ─── Reset complet (perd toutes les data) ──────────────────────────
+docker compose --profile infra --profile platform --profile services --profile frontend down -v
 ```
+
+> Un `Makefile` est inclus à la racine si tu as `make` installé — toutes les commandes ci-dessus y ont un raccourci (`make up`, `make down`, `make logs`, etc.). Tape `make help` pour la liste.
 
 ---
 
