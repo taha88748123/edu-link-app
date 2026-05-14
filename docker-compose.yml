@@ -349,6 +349,90 @@ services:
       timeout: 5s
       retries: 20
 
+  chat-service:
+    build:
+      context: ./backend
+      dockerfile: ./chat-service/Dockerfile
+    profiles: [services]
+    image: naja7i/chat-service:dev
+    depends_on:
+      service-discovery: { condition: service_healthy }
+      mongo: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      kafka: { condition: service_healthy }
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATA_MONGODB_URI: mongodb://naja7i:naja7i_dev@mongo:27017/chat_db?authSource=admin
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      NAJA7I_INTERNAL_KEY: ${NAJA7I_INTERNAL_KEY:-dev-internal-key}
+      NAJA7I_CHAT_MODERATION_DRIVER: logging
+    ports: ["8107:8107"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8107/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  video-session-service:
+    build:
+      context: ./backend
+      dockerfile: ./video-session-service/Dockerfile
+    profiles: [services]
+    image: naja7i/video-session-service:dev
+    depends_on:
+      service-discovery: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+      kafka: { condition: service_healthy }
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/video_db
+      SPRING_DATASOURCE_USERNAME: naja7i
+      SPRING_DATASOURCE_PASSWORD: naja7i_dev
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    ports: ["8108:8108"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8108/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  ai-agent-service:
+    build:
+      context: ./backend
+      dockerfile: ./ai-agent-service/Dockerfile
+    profiles: [services]
+    image: naja7i/ai-agent-service:dev
+    depends_on:
+      service-discovery: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      kafka: { condition: service_healthy }
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ai_db
+      SPRING_DATASOURCE_USERNAME: naja7i
+      SPRING_DATASOURCE_PASSWORD: naja7i_dev
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    ports: ["8109:8109"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8109/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
   notification-service:
     build:
       context: ./backend

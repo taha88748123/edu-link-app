@@ -1,0 +1,83 @@
+server:
+  port: 8107
+  forward-headers-strategy: framework
+
+spring:
+  application:
+    name: chat-service
+  config:
+    import: "optional:configserver:${SPRING_CLOUD_CONFIG_URI:http://localhost:8888}"
+
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://naja7i:naja7i_dev@localhost:27017/chat_db?authSource=admin}
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2s
+
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: chat-service
+      auto-offset-reset: earliest
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when-authorized
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+naja7i:
+  chat:
+    internal-key: ${NAJA7I_INTERNAL_KEY:dev-internal-key}
+    producer: chat-service
+    presence:
+      ttl-seconds: 30
+    typing:
+      ttl-seconds: 5
+    moderation:
+      driver: ${NAJA7I_CHAT_MODERATION_DRIVER:logging}   # logging | anthropic
+    bypass:
+      strike-threshold: 3
+      strike-window-hours: 24
+    anthropic:
+      base-url: ${ANTHROPIC_BASE_URL:https://api.anthropic.com}
+      api-key:  ${ANTHROPIC_API_KEY:}
+      model:    ${ANTHROPIC_MODEL:claude-sonnet-4-5}
+      timeout-ms: 5000
+
+logging:
+  level:
+    root: INFO
+    ma.naja7i: INFO
+    org.springframework.kafka: WARN
+    org.mongodb.driver: WARN
+  pattern:
+    # PII (phone/email) is NEVER logged in plain text — moderator masks before persistence.
+    console: "%d{HH:mm:ss.SSS} %-5level [%X{traceId:-}] %logger{36} - %msg%n"

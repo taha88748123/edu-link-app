@@ -54,6 +54,10 @@ jobs:
         working-directory: backend
         run: mvn -B -pl payment-service -am clean verify
 
+      - name: Build & test Phase 3 microservices
+        working-directory: backend
+        run: mvn -B -pl chat-service,video-session-service,ai-agent-service -am clean verify
+
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -80,6 +84,9 @@ jobs:
             pricing-service,
             booking-service,
             payment-service,
+            chat-service,
+            video-session-service,
+            ai-agent-service,
           ]
     steps:
       - uses: actions/checkout@v4

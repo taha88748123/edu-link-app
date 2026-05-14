@@ -1,0 +1,43 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+  config:
+    import: "optional:configserver:"
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: video-session-service-test
+      auto-offset-reset: earliest
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+naja7i:
+  video:
+    # Disabled in hermetic tests — the long delay ensures the @Scheduled
+    # method never fires during the brief test window.
+    outbox-poll-ms: 600000
+    outbox-batch-size: 50
+    default-duration-minutes: 60
+    livekit:
+      driver: jwt
+      url: wss://livekit.localhost:7880
+      api-key: test-api-key
+      api-secret: test-secret-must-be-32-chars-or-more-padding-padding
+      token-ttl-buffer-minutes: 30
+      prelive-buffer-minutes: 5
+  kafka:
+    topics:
+      booking-accepted:  naja7i.booking.accepted.v1
+      booking-cancelled: naja7i.booking.cancelled.v1
+      booking-declined:  naja7i.booking.declined.v1
+
+logging:
+  level:
+    ma.naja7i: INFO

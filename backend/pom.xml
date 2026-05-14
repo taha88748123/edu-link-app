@@ -43,6 +43,9 @@
     <module>pricing-service</module>
     <module>booking-service</module>
     <module>payment-service</module>
+    <module>chat-service</module>
+    <module>video-session-service</module>
+    <module>ai-agent-service</module>
   </modules>
 
   <dependencyManagement>

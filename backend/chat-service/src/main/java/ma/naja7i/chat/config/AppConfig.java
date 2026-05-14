@@ -1,0 +1,44 @@
+package ma.naja7i.chat.config;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import ma.naja7i.shared.errors.GlobalExceptionHandler;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.web.client.RestClient;
+
+import java.time.Duration;
+
+@Configuration
+@Import(GlobalExceptionHandler.class)
+@EnableConfigurationProperties({ChatProperties.class})
+public class AppConfig {
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper om = new ObjectMapper();
+        om.registerModule(new JavaTimeModule());
+        om.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        return om;
+    }
+
+    /**
+     * Plain {@link RestClient} used by the {@code anthropic} bypass analyser. We keep
+     * timeouts short because the call is fire-and-forget (async) and the fallback
+     * (logging) is always safe.
+     */
+    @Bean
+    public RestClient anthropicRestClient(ChatProperties props) {
+        Duration timeout = Duration.ofMillis(props.getAnthropic().getTimeoutMs());
+        return RestClient.builder()
+                .baseUrl(props.getAnthropic().getBaseUrl())
+                .requestFactory(new org.springframework.http.client.SimpleClientHttpRequestFactory() {{
+                    setConnectTimeout((int) timeout.toMillis());
+                    setReadTimeout((int) timeout.toMillis());
+                }})
+                .build();
+    }
+}

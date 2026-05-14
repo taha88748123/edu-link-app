@@ -1,0 +1,98 @@
+server:
+  port: 8108
+  forward-headers-strategy: framework
+
+spring:
+  application:
+    name: video-session-service
+  config:
+    import: "optional:configserver:${SPRING_CLOUD_CONFIG_URI:http://localhost:8888}"
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/video_db}
+    username: ${SPRING_DATASOURCE_USERNAME:naja7i}
+    password: ${SPRING_DATASOURCE_PASSWORD:naja7i}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        format_sql: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: video-session-service
+      auto-offset-reset: earliest
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when-authorized
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operations-sorter: method
+
+naja7i:
+  video:
+    outbox-poll-ms: 2000
+    outbox-batch-size: 50
+    default-duration-minutes: 60
+    livekit:
+      # 'jwt' issues a real HS256 token compatible with LiveKit; 'logging' returns a stub.
+      driver: ${NAJA7I_VIDEO_LIVEKIT_DRIVER:jwt}
+      url: ${NAJA7I_VIDEO_LIVEKIT_URL:wss://livekit.localhost:7880}
+      api-key: ${NAJA7I_VIDEO_LIVEKIT_API_KEY:dev-api-key}
+      # Must be >= 32 chars for HS256 (jjwt 0.12+). Override in production.
+      api-secret: ${NAJA7I_VIDEO_LIVEKIT_API_SECRET:dev-api-secret-32-chars-minimum-padding}
+      token-ttl-buffer-minutes: 30
+      prelive-buffer-minutes: 5
+  kafka:
+    topics:
+      booking-accepted:  naja7i.booking.accepted.v1
+      booking-cancelled: naja7i.booking.cancelled.v1
+      booking-declined:  naja7i.booking.declined.v1
+
+logging:
+  level:
+    root: INFO
+    ma.naja7i: INFO
+    org.hibernate.SQL: WARN
+    org.springframework.kafka: WARN
+  pattern:
+    # Never log the LiveKit token / api-secret / room — correlate by traceId.
+    console: "%d{HH:mm:ss.SSS} %-5level [%X{traceId:-}] %logger{36} - %msg%n"
