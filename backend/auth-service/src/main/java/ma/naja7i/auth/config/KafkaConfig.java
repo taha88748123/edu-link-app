@@ -33,11 +33,12 @@ public class KafkaConfig {
 
     @Bean
     public ProducerFactory<String, DomainEvent<?>> producerFactory(ObjectMapper kafkaObjectMapper) {
+        // Spring Kafka refuses a JsonSerializer that is both pre-configured (setters
+        // on the instance) AND configured via producer properties (e.g.
+        // JsonSerializer.ADD_TYPE_INFO_HEADERS). We pre-configure the instance, so
+        // the props map must NOT contain JsonSerializer.* keys.
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        props.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, false);
         props.put(ProducerConfig.ACKS_CONFIG, "all");
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
         JsonSerializer<DomainEvent<?>> valueSer = new JsonSerializer<>(kafkaObjectMapper);
